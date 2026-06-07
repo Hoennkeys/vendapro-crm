@@ -136,7 +136,7 @@ function RootComponent() {
               <div className="flex-1" />
               <ThemeToggle />
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">MC</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">AD</AvatarFallback>
               </Avatar>
             </header>
             <main className="flex-1 p-4 md:p-6">

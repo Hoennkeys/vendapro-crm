@@ -38,9 +38,9 @@ function Propostas() {
   const [cliente, setCliente] = React.useState("");
   const [cnpj, setCnpj] = React.useState("");
   const [validadeDias, setValidadeDias] = React.useState(15);
-  const [condicoes, setCondicoes] = React.useState("Pagamento em até 12x sem juros.");
+  const [condicoes, setCondicoes] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
-  const [itens, setItens] = React.useState<ItemProposta[]>([{ descricao: "Plano Pro Anual", qtd: 1, valorUnit: 12000 }]);
+  const [itens, setItens] = React.useState<ItemProposta[]>([{ descricao: "", qtd: 1, valorUnit: 0 }]);
 
   const total = itens.reduce((a, i) => a + i.qtd * i.valorUnit, 0);
 
@@ -182,6 +182,13 @@ function Propostas() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {propostas.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
+                    Nenhuma proposta salva. Preencha o formulário acima para criar a primeira.
+                  </TableCell>
+                </TableRow>
+              )}
               {propostas.map((p) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-mono text-xs">{p.numero}</TableCell>

@@ -26,20 +26,15 @@ function Chats() {
   const {
     conversas, usuarios, leads, enviarMensagem, adicionarLead, adicionarTimeline, marcarConversaLida,
   } = useCrm();
-  const [ativaId, setAtivaId] = React.useState(conversas[0]?.id);
+  const [ativaId, setAtivaId] = React.useState<string | undefined>(undefined);
   const [busca, setBusca] = React.useState("");
   const [texto, setTexto] = React.useState("");
-  const ativa = conversas.find((c) => c.id === ativaId) ?? conversas[0];
+  const ativa = ativaId ? conversas.find((c) => c.id === ativaId) : undefined;
 
   const selecionarConversa = (id: string) => {
     setAtivaId(id);
     marcarConversaLida(id);
   };
-
-  React.useEffect(() => {
-    const id = conversas[0]?.id;
-    if (id) marcarConversaLida(id);
-  }, []);
 
   const filtradas = conversas.filter(
     (c) => c.contatoNome.toLowerCase().includes(busca.toLowerCase())
@@ -120,6 +115,9 @@ function Chats() {
             </div>
           </div>
           <ScrollArea className="flex-1">
+            {filtradas.length === 0 && (
+              <p className="p-4 text-sm text-muted-foreground">Nenhuma conversa. Novos chats aparecerão aqui.</p>
+            )}
             {filtradas.map((c) => (
               <button
                 key={c.id}
@@ -189,7 +187,11 @@ function Chats() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">Selecione uma conversa</div>
+            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm text-center px-6">
+              {conversas.length === 0
+                ? "Nenhuma conversa ativa. Quando houver atendimentos, selecione um chat na lista."
+                : "Selecione uma conversa"}
+            </div>
           )}
         </div>
 

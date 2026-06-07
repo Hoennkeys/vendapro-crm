@@ -57,7 +57,7 @@ function Configuracoes() {
   const { usuarios, adicionarUsuario, alternarUsuarioAtivo } = useCrm();
   const [novo, setNovo] = React.useState(false);
   const [form, setForm] = React.useState({ nome: "", email: "", papel: "Vendedor" as Papel, ativo: true });
-  const [smtp, setSmtp] = React.useState({ host: "smtp.vendapro.com.br", porta: "587", usuario: "vendas@empresa.com.br", senha: "", ssl: true });
+  const [smtp, setSmtp] = React.useState({ host: "", porta: "", usuario: "", senha: "", ssl: true });
 
   return (
     <div className="space-y-4">
@@ -142,9 +142,9 @@ function Configuracoes() {
               </div>
               <div className="space-y-3">
                 <h3 className="font-medium">IMAP (Recebimento)</h3>
-                <div><Label>Servidor IMAP</Label><Input defaultValue="imap.vendapro.com.br" /></div>
-                <div><Label>Porta</Label><Input defaultValue="993" /></div>
-                <div><Label>Usuário</Label><Input defaultValue="vendas@empresa.com.br" /></div>
+                <div><Label>Servidor IMAP</Label><Input placeholder="imap.seudominio.com.br" /></div>
+                <div><Label>Porta</Label><Input placeholder="993" /></div>
+                <div><Label>Usuário</Label><Input placeholder="seu@email.com.br" /></div>
                 <div><Label>Senha</Label><Input type="password" /></div>
                 <div className="flex items-center gap-2"><Switch defaultChecked /><Label>Usar SSL/TLS</Label></div>
               </div>
@@ -159,8 +159,8 @@ function Configuracoes() {
           <Card>
             <CardHeader><CardTitle>Geral</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
-              <div><Label>Nome da empresa</Label><Input defaultValue="VendaPro Tecnologia LTDA" /></div>
-              <div><Label>Fuso horário</Label><Input defaultValue="America/Sao_Paulo" /></div>
+              <div><Label>Nome da empresa</Label><Input placeholder="Sua empresa" /></div>
+              <div><Label>Fuso horário</Label><Input placeholder="America/Sao_Paulo" /></div>
               <div>
                 <Label>Moeda</Label>
                 <Select defaultValue="BRL">

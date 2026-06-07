@@ -166,7 +166,7 @@ function ComporDialog({
     const t = emailTemplates.find((x) => x.id === id);
     if (!t) return;
     const cliente = para.split("@")[0] || "cliente";
-    const { assunto: a, corpo: c } = aplicarTemplate(t, cliente, "Mariana Costa");
+    const { assunto: a, corpo: c } = aplicarTemplate(t, cliente, "Administrador");
     setAssunto(a);
     setCorpo(c);
   };
@@ -201,7 +201,7 @@ function ComporDialog({
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button
-            onClick={() => onEnviar({ de: "mariana@vendapro.com.br", para, assunto, corpo })}
+            onClick={() => onEnviar({ de: "admin@vendapro.com.br", para, assunto, corpo })}
             disabled={!para || !assunto}
           ><SendIcon className="h-4 w-4" /> Enviar</Button>
         </DialogFooter>

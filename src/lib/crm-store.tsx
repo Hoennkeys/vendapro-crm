@@ -42,7 +42,8 @@ type Ctx = State & {
 };
 
 const CrmContext = React.createContext<Ctx | null>(null);
-const STORAGE_KEY = "vendapro_crm_state_v1";
+const STORAGE_KEY = "vendapro_crm_state_v2";
+const LEGACY_STORAGE_KEY = "vendapro_crm_state_v1";
 
 const initial: State = {
   leads: leadsMock,
@@ -64,6 +65,7 @@ export function CrmProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     try {
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setState(JSON.parse(raw));
     } catch {}
