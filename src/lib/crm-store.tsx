@@ -24,13 +24,17 @@ type State = {
 type Ctx = State & {
   setFiltroVendedor: (v: string) => void;
   moverLead: (id: string, etapa: Etapa) => void;
-  adicionarLead: (lead: Omit<Lead, "id" | "criadoEm" | "timeline"> & Partial<Pick<Lead, "timeline">>) => Lead;
+  adicionarLead: (
+    lead: Omit<Lead, "id" | "criadoEm" | "timeline"> & Partial<Pick<Lead, "timeline">>,
+    opts?: { conversaId?: string },
+  ) => Lead;
   adicionarTimeline: (leadId: string, item: TimelineItem) => void;
   toggleTarefa: (id: string) => void;
   adicionarTarefa: (t: Omit<Tarefa, "id">) => void;
   enviarEmail: (e: Omit<EmailMsg, "id" | "em" | "pasta" | "lida">) => void;
   marcarEmailLido: (id: string) => void;
   enviarMensagem: (conversaId: string, texto: string) => void;
+  marcarConversaLida: (conversaId: string) => void;
   adicionarProposta: (p: Omit<Proposta, "id" | "numero" | "criadaEm" | "status"> & { status?: Proposta["status"] }) => Proposta;
   atualizarStatusProposta: (id: string, status: Proposta["status"]) => void;
   adicionarUsuario: (u: Omit<Usuario, "id">) => void;
@@ -82,14 +86,22 @@ export function CrmProvider({ children }: { children: React.ReactNode }) {
           ...s,
           leads: s.leads.map((l) => (l.id === id ? { ...l, etapa } : l)),
         })),
-      adicionarLead: (lead) => {
+      adicionarLead: (lead, opts) => {
         const novo: Lead = {
           ...lead,
           id: uid("l"),
           criadoEm: new Date().toISOString(),
           timeline: lead.timeline ?? [],
         };
-        setState((s) => ({ ...s, leads: [novo, ...s.leads] }));
+        setState((s) => ({
+          ...s,
+          leads: [novo, ...s.leads],
+          conversas: opts?.conversaId
+            ? s.conversas.map((c) =>
+                c.id === opts.conversaId ? { ...c, leadId: novo.id } : c,
+              )
+            : s.conversas,
+        }));
         return novo;
       },
       adicionarTimeline: (leadId, item) =>
@@ -142,18 +154,40 @@ export function CrmProvider({ children }: { children: React.ReactNode }) {
               : c,
           ),
         })),
+      marcarConversaLida: (conversaId) =>
+        setState((s) => {
+          const alvo = s.conversas.find((c) => c.id === conversaId);
+          if (!alvo || alvo.naoLidas === 0) return s;
+          return {
+            ...s,
+            conversas: s.conversas.map((c) =>
+              c.id === conversaId
+                ? {
+                    ...c,
+                    naoLidas: 0,
+                    mensagens: c.mensagens.map((m) =>
+                      m.autor === "cliente" ? { ...m, lida: true } : m,
+                    ),
+                  }
+                : c,
+            ),
+          };
+        }),
       adicionarProposta: (p) => {
-        const numero = `PROP-${new Date().getFullYear()}-${String(
-          state.propostas.length + 1,
-        ).padStart(3, "0")}`;
-        const nova: Proposta = {
-          ...p,
-          id: uid("p"),
-          numero,
-          criadaEm: new Date().toISOString(),
-          status: p.status ?? "Pendente",
-        };
-        setState((s) => ({ ...s, propostas: [nova, ...s.propostas] }));
+        let nova!: Proposta;
+        setState((s) => {
+          const numero = `PROP-${new Date().getFullYear()}-${String(
+            s.propostas.length + 1,
+          ).padStart(3, "0")}`;
+          nova = {
+            ...p,
+            id: uid("p"),
+            numero,
+            criadaEm: new Date().toISOString(),
+            status: p.status ?? "Pendente",
+          };
+          return { ...s, propostas: [nova, ...s.propostas] };
+        });
         return nova;
       },
       atualizarStatusProposta: (id, status) =>

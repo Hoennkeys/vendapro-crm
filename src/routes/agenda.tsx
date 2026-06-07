@@ -15,7 +15,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { useCrm, nomeVendedor } from "@/lib/crm-store";
-import { brDate } from "@/lib/format";
+import { brDate, isoFromDateInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Prioridade } from "@/lib/types";
 
@@ -110,7 +110,7 @@ function Agenda() {
               <Input
                 type="date"
                 value={form.prazo.slice(0, 10)}
-                onChange={(e) => setForm({ ...form, prazo: new Date(e.target.value).toISOString() })}
+                onChange={(e) => setForm({ ...form, prazo: isoFromDateInput(e.target.value) })}
               />
             </div>
           </div>

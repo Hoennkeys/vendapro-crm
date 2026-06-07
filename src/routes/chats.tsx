@@ -24,12 +24,22 @@ function iniciais(nome: string) {
 
 function Chats() {
   const {
-    conversas, usuarios, leads, enviarMensagem, adicionarLead, adicionarTimeline,
+    conversas, usuarios, leads, enviarMensagem, adicionarLead, adicionarTimeline, marcarConversaLida,
   } = useCrm();
   const [ativaId, setAtivaId] = React.useState(conversas[0]?.id);
   const [busca, setBusca] = React.useState("");
   const [texto, setTexto] = React.useState("");
   const ativa = conversas.find((c) => c.id === ativaId) ?? conversas[0];
+
+  const selecionarConversa = (id: string) => {
+    setAtivaId(id);
+    marcarConversaLida(id);
+  };
+
+  React.useEffect(() => {
+    const id = conversas[0]?.id;
+    if (id) marcarConversaLida(id);
+  }, []);
 
   const filtradas = conversas.filter(
     (c) => c.contatoNome.toLowerCase().includes(busca.toLowerCase())
@@ -48,16 +58,19 @@ function Chats() {
       toast.info("Esta conversa já está vinculada a um lead no funil.");
       return;
     }
-    const novo = adicionarLead({
-      cliente: ativa.contatoEmpresa,
-      contato: ativa.contatoNome,
-      email: `${ativa.contatoNome.split(" ")[0].toLowerCase()}@${ativa.contatoEmpresa.toLowerCase().replace(/[^a-z]/g, "")}.com.br`,
-      telefone: ativa.telefone,
-      valor: 5000,
-      etapa: "Sem Contato",
-      prioridade: "Média",
-      responsavelId: ativa.agenteId,
-    });
+    const novo = adicionarLead(
+      {
+        cliente: ativa.contatoEmpresa,
+        contato: ativa.contatoNome,
+        email: `${ativa.contatoNome.split(" ")[0].toLowerCase()}@${ativa.contatoEmpresa.toLowerCase().replace(/[^a-z]/g, "")}.com.br`,
+        telefone: ativa.telefone,
+        valor: 5000,
+        etapa: "Sem Contato",
+        prioridade: "Média",
+        responsavelId: ativa.agenteId,
+      },
+      { conversaId: ativa.id },
+    );
     toast.success(`Oportunidade criada: ${novo.cliente}`, { description: "Adicionada à etapa Sem Contato." });
   };
 
@@ -65,16 +78,19 @@ function Chats() {
     if (!ativa) return;
     let leadId = ativa.leadId;
     if (!leadId) {
-      const novo = adicionarLead({
-        cliente: ativa.contatoEmpresa,
-        contato: ativa.contatoNome,
-        email: "",
-        telefone: ativa.telefone,
-        valor: 0,
-        etapa: "Sem Contato",
-        prioridade: "Baixa",
-        responsavelId: ativa.agenteId,
-      });
+      const novo = adicionarLead(
+        {
+          cliente: ativa.contatoEmpresa,
+          contato: ativa.contatoNome,
+          email: "",
+          telefone: ativa.telefone,
+          valor: 0,
+          etapa: "Sem Contato",
+          prioridade: "Baixa",
+          responsavelId: ativa.agenteId,
+        },
+        { conversaId: ativa.id },
+      );
       leadId = novo.id;
     }
     const resumo = ativa.mensagens.map((m) => `${m.autor === "agente" ? "Agente" : "Cliente"}: ${m.texto}`).join(" | ");
@@ -107,7 +123,7 @@ function Chats() {
             {filtradas.map((c) => (
               <button
                 key={c.id}
-                onClick={() => setAtivaId(c.id)}
+                onClick={() => selecionarConversa(c.id)}
                 className={cn(
                   "w-full text-left p-3 border-b hover:bg-accent/50 flex gap-3 items-start transition-colors",
                   ativa?.id === c.id && "bg-accent",

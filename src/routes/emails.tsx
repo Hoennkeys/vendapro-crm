@@ -50,7 +50,11 @@ function Emails() {
     pastas.map((p) => [p.id, emails.filter((e) => e.pasta === p.id && !e.lida).length]),
   );
 
-  React.useEffect(() => { setSelecionado(lista[0] ?? null); }, [pasta]); // eslint-disable-line
+  React.useEffect(() => {
+    setSelecionado((current) =>
+      current && lista.some((e) => e.id === current.id) ? current : (lista[0] ?? null),
+    );
+  }, [pasta, busca, emails]);
 
   return (
     <div className="h-[calc(100vh-7rem)]">

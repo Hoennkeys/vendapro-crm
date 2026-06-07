@@ -43,11 +43,15 @@ function Painel() {
     quantidade: leadsFiltrados.filter((l) => l.etapa === e).length,
   }));
 
-  const porVendedor = usuarios.map((u) => ({
-    nome: u.nome.split(" ")[0],
-    vendas: leads.filter((l) => l.responsavelId === u.id && l.etapa === "Ganho").reduce((a, l) => a + l.valor, 0),
-    destaque: filtroVendedor === u.id,
-  }));
+  const porVendedor = usuarios
+    .filter((u) => filtroVendedor === "todos" || u.id === filtroVendedor)
+    .map((u) => ({
+      nome: u.nome.split(" ")[0],
+      vendas: leadsFiltrados
+        .filter((l) => l.responsavelId === u.id && l.etapa === "Ganho")
+        .reduce((a, l) => a + l.valor, 0),
+      destaque: filtroVendedor === u.id,
+    }));
 
   const coresEtapa = ["#94a3b8", "#6366f1", "#f59e0b", "#16a34a", "#dc2626"];
 

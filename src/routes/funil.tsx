@@ -46,14 +46,18 @@ function Funil() {
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [selecionado, setSelecionado] = React.useState<Lead | null>(null);
   const [novoOpen, setNovoOpen] = React.useState(false);
+  const suppressClickRef = React.useRef(false);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const handleEnd = (e: DragEndEvent) => {
-    setActiveId(null);
     const id = e.active.id as string;
     const overId = e.over?.id as string | undefined;
+    setActiveId(null);
     if (!overId) return;
-    if (etapas.includes(overId as Etapa)) moverLead(id, overId as Etapa);
+    if (etapas.includes(overId as Etapa)) {
+      suppressClickRef.current = true;
+      moverLead(id, overId as Etapa);
+    }
   };
 
   const ativo = activeId ? leads.find((l) => l.id === activeId) : null;
@@ -81,7 +85,12 @@ function Funil() {
             return (
               <Coluna key={etapa} etapa={etapa} total={total} qtd={items.length}>
                 {items.map((l) => (
-                  <CardLead key={l.id} lead={l} onClick={() => setSelecionado(l)} />
+                  <CardLead
+                    key={l.id}
+                    lead={l}
+                    suppressClickRef={suppressClickRef}
+                    onClick={() => setSelecionado(l)}
+                  />
                 ))}
               </Coluna>
             );
@@ -220,16 +229,33 @@ function Coluna({ etapa, total, qtd, children }: { etapa: Etapa; total: number; 
   );
 }
 
-function CardLead({ lead, onClick }: { lead: Lead; onClick: () => void }) {
+function CardLead({
+  lead,
+  onClick,
+  suppressClickRef,
+}: {
+  lead: Lead;
+  onClick: () => void;
+  suppressClickRef?: React.MutableRefObject<boolean>;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+
+  const handleClick = () => {
+    if (suppressClickRef?.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    onClick();
+  };
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      onClick={onClick}
+      onClick={handleClick}
       className={cn("cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md", isDragging && "opacity-30")}
     >
       <CardContent className="p-3 space-y-2">

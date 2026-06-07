@@ -74,6 +74,9 @@ function Propostas() {
 
   const salvar = () => {
     if (!cliente) return toast.error("Informe o cliente.");
+    if (itens.length === 0 || !itens.some((i) => i.descricao.trim())) {
+      return toast.error("Adicione ao menos um item com descrição.");
+    }
     const validade = new Date(Date.now() + validadeDias * 86400000).toISOString();
     const nova = adicionarProposta({
       cliente, cnpj, valor: total, validade, responsavelId: usuarios[0]?.id ?? "",
