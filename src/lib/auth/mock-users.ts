@@ -18,6 +18,13 @@ export const MOCK_USERS: MockUserRecord[] = [
     tenantMemberships: [{ tenantId: "tenant-demo", tenantSlug: "demo", role: "OPERATIONAL" }],
   },
   {
+    id: "user-operacional-acme",
+    email: "operacional@acme.com",
+    password: "demo123",
+    nome: "Carlos Acme",
+    tenantMemberships: [{ tenantId: "tenant-acme", tenantSlug: "acme", role: "ADMIN" }],
+  },
+  {
     id: "user-cliente",
     email: "cliente@demo.com",
     password: "demo123",
@@ -26,6 +33,16 @@ export const MOCK_USERS: MockUserRecord[] = [
     clientId: "client-001",
     tenantSlug: "demo",
     tenantId: "tenant-demo",
+  },
+  {
+    id: "user-cliente-acme",
+    email: "cliente@acme.com",
+    password: "demo123",
+    nome: "Ana Acme",
+    clientRole: "CLIENT",
+    clientId: "client-acme-001",
+    tenantSlug: "acme",
+    tenantId: "tenant-acme",
   },
 ];
 
@@ -40,11 +57,16 @@ export function findMockUser(email: string, password: string): SessionUser | nul
   return sessionUser;
 }
 
-export const MOCK_LOGIN_HINTS = MOCK_USERS.map(
-  ({ email, password, nome, platformRole, clientRole }) => ({
-    email,
-    password,
-    nome,
-    tipo: platformRole ?? clientRole ?? "OPERATIONAL",
-  }),
-);
+function portalLabel(user: MockUserRecord): string {
+  if (user.platformRole === "SUPER_ADMIN") return "Admin plataforma";
+  if (user.clientRole === "CLIENT") return `Cliente (${user.tenantSlug})`;
+  const slug = user.tenantMemberships?.[0]?.tenantSlug ?? "app";
+  return `Operacional (${slug})`;
+}
+
+export const MOCK_LOGIN_HINTS = MOCK_USERS.map(({ email, password, nome, ...rest }) => ({
+  email,
+  password,
+  nome,
+  tipo: portalLabel({ email, password, nome, ...rest } as MockUserRecord),
+}));

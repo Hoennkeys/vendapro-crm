@@ -1,4 +1,6 @@
-import { DEMO_TENANT_SLUG } from "./constants";
+import { ACME_TENANT_SLUG, DEMO_TENANT_SLUG } from "./constants";
+import { DEFAULT_WHITE_LABELS } from "./defaults";
+import type { TenantWhiteLabel } from "./types";
 
 export type MockTenant = {
   id: string;
@@ -8,9 +10,14 @@ export type MockTenant = {
 
 export const MOCK_TENANTS: Record<string, MockTenant> = {
   [DEMO_TENANT_SLUG]: {
-    id: "tenant-demo",
+    id: DEFAULT_WHITE_LABELS.demo.tenantId,
     slug: DEMO_TENANT_SLUG,
-    nome: "Demo Corp",
+    nome: DEFAULT_WHITE_LABELS.demo.nome,
+  },
+  [ACME_TENANT_SLUG]: {
+    id: DEFAULT_WHITE_LABELS.acme.tenantId,
+    slug: ACME_TENANT_SLUG,
+    nome: DEFAULT_WHITE_LABELS.acme.nome,
   },
 };
 
@@ -20,4 +27,8 @@ export function isValidTenantSlug(slug: string): boolean {
 
 export function getMockTenant(slug: string): MockTenant | null {
   return MOCK_TENANTS[slug] ?? null;
+}
+
+export function getMockTenantWhiteLabel(slug: string): TenantWhiteLabel | null {
+  return DEFAULT_WHITE_LABELS[slug] ?? null;
 }

@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { isValidTenantSlug } from "@/lib/tenant/mock-tenants";
+import { TenantProvider } from "@/lib/tenant/tenant-store";
 
 export const Route = createFileRoute("/t/$tenantSlug")({
   beforeLoad: ({ params }) => {
@@ -11,5 +12,11 @@ export const Route = createFileRoute("/t/$tenantSlug")({
 });
 
 function TenantLayout() {
-  return <Outlet />;
+  const { tenantSlug } = Route.useParams();
+
+  return (
+    <TenantProvider tenantSlug={tenantSlug}>
+      <Outlet />
+    </TenantProvider>
+  );
 }
