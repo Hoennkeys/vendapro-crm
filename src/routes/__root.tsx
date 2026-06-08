@@ -10,13 +10,16 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { AuthProvider } from "@/lib/auth/auth-store";
+import { loadSessionForRequest } from "@/lib/auth/load-session";
+import type { Session } from "@/lib/auth/types";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { CrmProvider } from "@/lib/crm-store";
 import { Toaster } from "@/components/ui/sonner";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+export type RootRouteContext = {
+  queryClient: QueryClient;
+  session: Session | null;
+};
 
 function NotFoundComponent() {
   return (
@@ -78,13 +81,21 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<RootRouteContext>()({
+  beforeLoad: async () => {
+    const session = await loadSessionForRequest();
+    return { session };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "VendaPro CRM — Gestão de Vendas para Pequenos Negócios" },
-      { name: "description", content: "Sistema completo de CRM para gestão de vendas, funil, atendimento e propostas comerciais." },
+      {
+        name: "description",
+        content:
+          "Sistema completo de CRM para gestão de vendas, funil, atendimento e propostas comerciais.",
+      },
       { name: "author", content: "VendaPro" },
       { property: "og:title", content: "VendaPro CRM" },
       { property: "og:description", content: "CRM moderno para pequenos negócios brasileiros." },
@@ -99,7 +110,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -127,25 +141,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CrmProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 backdrop-blur px-4">
-              <SidebarTrigger />
-              <div className="flex-1" />
-              <ThemeToggle />
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">AD</AvatarFallback>
-              </Avatar>
-            </header>
-            <main className="flex-1 p-4 md:p-6">
-              <Outlet />
-            </main>
-          </SidebarInset>
-        </SidebarProvider>
+      <AuthProvider>
+        <Outlet />
         <Toaster />
-      </CrmProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   KanbanSquare,
@@ -22,16 +22,17 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 
-const items = [
-  { title: "Painel", url: "/painel", icon: LayoutDashboard },
-  { title: "Funil de Vendas", url: "/funil", icon: KanbanSquare },
-  { title: "Chats", url: "/chats", icon: MessageSquare },
-  { title: "E-mails", url: "/emails", icon: Mail },
-  { title: "Agenda", url: "/agenda", icon: CalendarDays },
-  { title: "Propostas", url: "/propostas", icon: FileText },
+const navItems = [
+  { title: "Painel", to: "/t/$tenantSlug/app/painel" as const, icon: LayoutDashboard },
+  { title: "Funil de Vendas", to: "/t/$tenantSlug/app/funil" as const, icon: KanbanSquare },
+  { title: "Chats", to: "/t/$tenantSlug/app/chats" as const, icon: MessageSquare },
+  { title: "E-mails", to: "/t/$tenantSlug/app/emails" as const, icon: Mail },
+  { title: "Agenda", to: "/t/$tenantSlug/app/agenda" as const, icon: CalendarDays },
+  { title: "Propostas", to: "/t/$tenantSlug/app/propostas" as const, icon: FileText },
 ];
 
 export function AppSidebar() {
+  const { tenantSlug } = useParams({ from: "/t/$tenantSlug/app" });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -52,10 +53,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link to={item.url}>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.to}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === `/t/${tenantSlug}/app/${item.to.split("/").pop()}`}
+                    tooltip={item.title}
+                  >
+                    <Link to={item.to} params={{ tenantSlug }}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -69,8 +74,12 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === "/configuracoes"} tooltip="Configurações">
-              <Link to="/configuracoes">
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === `/t/${tenantSlug}/app/configuracoes`}
+              tooltip="Configurações"
+            >
+              <Link to="/t/$tenantSlug/app/configuracoes" params={{ tenantSlug }}>
                 <Settings />
                 <span>Configurações</span>
               </Link>
