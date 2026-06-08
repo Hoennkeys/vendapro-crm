@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { useTenant } from "@/lib/tenant/tenant-store";
 
 const navItems = [
   { title: "Painel", to: "/t/$tenantSlug/app/painel" as const, icon: LayoutDashboard },
@@ -33,6 +34,7 @@ const navItems = [
 
 export function AppSidebar() {
   const { tenantSlug } = useParams({ from: "/t/$tenantSlug/app" });
+  const { whiteLabel } = useTenant();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -43,8 +45,8 @@ export function AppSidebar() {
             <Zap className="h-4 w-4" />
           </div>
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold">VendaPro</span>
-            <span className="text-xs text-muted-foreground">CRM de Vendas</span>
+            <span className="text-sm font-semibold">{whiteLabel.nome}</span>
+            <span className="text-xs text-muted-foreground">VendaPro CRM</span>
           </div>
         </div>
       </SidebarHeader>

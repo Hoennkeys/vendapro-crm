@@ -10,9 +10,8 @@ export const Route = createFileRoute("/t/$tenantSlug/portal")({
 });
 
 function PortalRouteLayout() {
-  const { tenantSlug } = Route.useParams();
   return (
-    <PortalLayout tenantSlug={tenantSlug}>
+    <PortalLayout>
       <Outlet />
     </PortalLayout>
   );

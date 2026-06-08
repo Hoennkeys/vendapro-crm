@@ -5,23 +5,35 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth/auth-store";
 import { userInitials } from "@/lib/auth/session";
-import { getMockTenant } from "@/lib/tenant/mock-tenants";
+import { usePortalTheme, useTenant } from "@/lib/tenant/tenant-store";
 
 type PortalLayoutProps = {
   children: ReactNode;
-  tenantSlug: string;
 };
 
-export function PortalLayout({ children, tenantSlug }: PortalLayoutProps) {
+export function PortalLayout({ children }: PortalLayoutProps) {
   const { session, logout } = useAuth();
-  const tenant = getMockTenant(tenantSlug);
+  const { whiteLabel } = useTenant();
+  usePortalTheme();
+
   const initials = session ? userInitials(session.user.nome) : "CL";
 
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur">
+        {whiteLabel.logoUrl ? (
+          <img
+            src={whiteLabel.logoUrl}
+            alt={whiteLabel.nome}
+            className="h-9 w-9 rounded-md border object-contain"
+          />
+        ) : (
+          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+            {whiteLabel.nome.slice(0, 2).toUpperCase()}
+          </div>
+        )}
         <div className="leading-tight">
-          <p className="text-sm font-semibold">{tenant?.nome ?? tenantSlug}</p>
+          <p className="text-sm font-semibold">{whiteLabel.nome}</p>
           <p className="text-xs text-muted-foreground">Portal do Cliente</p>
         </div>
         <div className="flex-1" />
