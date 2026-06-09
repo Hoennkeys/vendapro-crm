@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AppLayout } from "@/layouts/app-layout";
 import { requireTenantAppAccess } from "@/lib/auth/guards";
-import { CrmProvider } from "@/lib/crm-store";
+import { CrmProviderWithTenant } from "@/lib/crm-store";
 
 export const Route = createFileRoute("/t/$tenantSlug/app")({
   beforeLoad: ({ context, params, location }) => {
@@ -12,10 +12,10 @@ export const Route = createFileRoute("/t/$tenantSlug/app")({
 
 function AppRouteLayout() {
   return (
-    <CrmProvider>
+    <CrmProviderWithTenant>
       <AppLayout>
         <Outlet />
       </AppLayout>
-    </CrmProvider>
+    </CrmProviderWithTenant>
   );
 }

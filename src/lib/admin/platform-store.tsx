@@ -1,6 +1,21 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
-import { MOCK_USERS } from "@/lib/auth/mock-users";
+import {
+  createTenantServerFn,
+  deleteTenantServerFn,
+  getPlatformMetricsServerFn,
+  listTenantsServerFn,
+  updateTenantServerFn,
+} from "@/lib/api/tenants.functions";
+import { isClientServerApiEnabled } from "@/lib/client/server-api";
 
 import {
   computePlatformMetrics,
@@ -19,59 +34,112 @@ import type {
 type PlatformContextValue = {
   tenants: PlatformTenant[];
   metrics: PlatformMetrics;
-  createTenant: (input: CreateTenantInput) => PlatformTenant;
-  updateTenant: (id: string, updates: UpdateTenantInput) => PlatformTenant;
-  deleteTenant: (id: string) => void;
-  refresh: () => void;
+  loading: boolean;
+  createTenant: (input: CreateTenantInput) => Promise<PlatformTenant>;
+  updateTenant: (id: string, updates: UpdateTenantInput) => Promise<PlatformTenant>;
+  deleteTenant: (id: string) => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 const PlatformContext = createContext<PlatformContextValue | null>(null);
 
-export function PlatformProvider({ children }: { children: ReactNode }) {
-  const [tenants, setTenants] = useState<PlatformTenant[]>(() => listPlatformTenants());
+const EMPTY_METRICS: PlatformMetrics = {
+  totalTenants: 0,
+  activeTenants: 0,
+  trialTenants: 0,
+  suspendedTenants: 0,
+  totalUsers: 0,
+  mrrEstimate: 0,
+};
 
-  const refresh = useCallback(() => {
-    setTenants(listPlatformTenants());
-  }, []);
+export function PlatformProvider({ children }: { children: ReactNode }) {
+  const useServerApi = isClientServerApiEnabled();
+  const [tenants, setTenants] = useState<PlatformTenant[]>([]);
+  const [metrics, setMetrics] = useState<PlatformMetrics>(EMPTY_METRICS);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    if (useServerApi) {
+      const [nextTenants, nextMetrics] = await Promise.all([
+        listTenantsServerFn(),
+        getPlatformMetricsServerFn(),
+      ]);
+      setTenants(nextTenants);
+      setMetrics(nextMetrics);
+      return;
+    }
+
+    const localTenants = listPlatformTenants();
+    setTenants(localTenants);
+    setMetrics(computePlatformMetrics(5, localTenants));
+  }, [useServerApi]);
+
+  useEffect(() => {
+    void refresh().finally(() => setLoading(false));
+  }, [refresh]);
 
   const createTenant = useCallback(
-    (input: CreateTenantInput) => {
+    async (input: CreateTenantInput) => {
+      if (useServerApi) {
+        const tenant = await createTenantServerFn({
+          data: {
+            nome: input.nome,
+            slug: input.slug,
+            plan: input.plan,
+            status: input.status,
+          },
+        });
+        await refresh();
+        return tenant;
+      }
+
       const tenant = createPlatformTenant(input);
-      refresh();
+      await refresh();
       return tenant;
     },
-    [refresh],
+    [refresh, useServerApi],
   );
 
   const updateTenant = useCallback(
-    (id: string, updates: UpdateTenantInput) => {
+    async (id: string, updates: UpdateTenantInput) => {
+      if (useServerApi) {
+        const tenant = await updateTenantServerFn({ data: { tenantId: id, updates } });
+        await refresh();
+        return tenant;
+      }
+
       const tenant = updatePlatformTenant(id, updates);
-      refresh();
+      await refresh();
       return tenant;
     },
-    [refresh],
+    [refresh, useServerApi],
   );
 
   const deleteTenant = useCallback(
-    (id: string) => {
-      deletePlatformTenant(id);
-      refresh();
-    },
-    [refresh],
-  );
+    async (id: string) => {
+      if (useServerApi) {
+        await deleteTenantServerFn({ data: { tenantId: id } });
+        await refresh();
+        return;
+      }
 
-  const metrics = useMemo(() => computePlatformMetrics(MOCK_USERS.length, tenants), [tenants]);
+      deletePlatformTenant(id);
+      await refresh();
+    },
+    [refresh, useServerApi],
+  );
 
   const value = useMemo(
     () => ({
       tenants,
       metrics,
+      loading,
       createTenant,
       updateTenant,
       deleteTenant,
       refresh,
     }),
-    [tenants, metrics, createTenant, updateTenant, deleteTenant, refresh],
+    [tenants, metrics, loading, createTenant, updateTenant, deleteTenant, refresh],
   );
 
   return <PlatformContext.Provider value={value}>{children}</PlatformContext.Provider>;

@@ -74,9 +74,9 @@ function TenantDetailPage() {
     );
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
-      updateTenant(tenant.id, { nome, status, plan, whiteLabel });
+      await updateTenant(tenant.id, { nome, status, plan, whiteLabel });
       toast.success("Tenant atualizado.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Erro ao salvar.");

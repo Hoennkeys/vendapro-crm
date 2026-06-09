@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { LogOut } from "lucide-react";
 
+import { PortalNav } from "@/components/portal/portal-nav";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth/auth-store";
@@ -47,7 +48,10 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           {initials}
         </div>
       </header>
-      <main className="mx-auto max-w-5xl p-4 md:p-6">{children}</main>
+      <main className="mx-auto max-w-5xl space-y-4 p-4 md:p-6">
+        <PortalNav />
+        {children}
+      </main>
     </div>
   );
 }

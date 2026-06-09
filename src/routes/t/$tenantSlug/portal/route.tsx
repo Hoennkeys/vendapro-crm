@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { PortalLayout } from "@/layouts/portal-layout";
 import { requireClientPortalAccess } from "@/lib/auth/guards";
+import { CrmProviderWithTenant } from "@/lib/crm-store";
 
 export const Route = createFileRoute("/t/$tenantSlug/portal")({
   beforeLoad: ({ context, params, location }) => {
@@ -11,8 +12,10 @@ export const Route = createFileRoute("/t/$tenantSlug/portal")({
 
 function PortalRouteLayout() {
   return (
-    <PortalLayout>
-      <Outlet />
-    </PortalLayout>
+    <CrmProviderWithTenant>
+      <PortalLayout>
+        <Outlet />
+      </PortalLayout>
+    </CrmProviderWithTenant>
   );
 }

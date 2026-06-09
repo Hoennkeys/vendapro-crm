@@ -9,15 +9,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useCrm, nomeVendedor } from "@/lib/crm-store";
 import { brDate, isoFromDateInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { Prioridade } from "@/lib/types";
+import type { Prioridade, Tarefa } from "@/lib/types";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/agenda")({
   head: () => ({ meta: [{ title: "Agenda e Tarefas — VendaPro CRM" }] }),
@@ -34,7 +43,11 @@ function Agenda() {
   const { tarefas, usuarios, toggleTarefa, adicionarTarefa } = useCrm();
   const [novo, setNovo] = React.useState(false);
   const [form, setForm] = React.useState({
-    titulo: "", responsavelId: usuarios[0]?.id ?? "", prioridade: "Média" as Prioridade, prazo: new Date().toISOString(), concluida: false,
+    titulo: "",
+    responsavelId: usuarios[0]?.id ?? "",
+    prioridade: "Média" as Prioridade,
+    prazo: new Date().toISOString(),
+    concluida: false,
   });
 
   const pendentes = tarefas.filter((t) => !t.concluida);
@@ -47,7 +60,9 @@ function Agenda() {
           <h1 className="text-2xl font-semibold tracking-tight">Agenda e Tarefas</h1>
           <p className="text-sm text-muted-foreground">Organize seu dia e acompanhe a equipe.</p>
         </div>
-        <Button onClick={() => setNovo(true)}><Plus className="h-4 w-4" /> Nova Tarefa</Button>
+        <Button onClick={() => setNovo(true)}>
+          <Plus className="h-4 w-4" /> Nova Tarefa
+        </Button>
       </div>
 
       <Tabs defaultValue="tarefas">
@@ -58,19 +73,35 @@ function Agenda() {
 
         <TabsContent value="tarefas" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle>Pendentes ({pendentes.length})</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Pendentes ({pendentes.length})</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-2">
-              {pendentes.length === 0 && <p className="text-sm text-muted-foreground">Sem tarefas pendentes 🎉</p>}
+              {pendentes.length === 0 && (
+                <p className="text-sm text-muted-foreground">Sem tarefas pendentes 🎉</p>
+              )}
               {pendentes.map((t) => (
-                <ItemTarefa key={t.id} t={t} onToggle={() => toggleTarefa(t.id)} responsavel={nomeVendedor(usuarios, t.responsavelId)} />
+                <ItemTarefa
+                  key={t.id}
+                  t={t}
+                  onToggle={() => toggleTarefa(t.id)}
+                  responsavel={nomeVendedor(usuarios, t.responsavelId)}
+                />
               ))}
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle>Concluídas ({concluidas.length})</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Concluídas ({concluidas.length})</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-2">
               {concluidas.map((t) => (
-                <ItemTarefa key={t.id} t={t} onToggle={() => toggleTarefa(t.id)} responsavel={nomeVendedor(usuarios, t.responsavelId)} />
+                <ItemTarefa
+                  key={t.id}
+                  t={t}
+                  onToggle={() => toggleTarefa(t.id)}
+                  responsavel={nomeVendedor(usuarios, t.responsavelId)}
+                />
               ))}
             </CardContent>
           </Card>
@@ -88,20 +119,49 @@ function Agenda() {
             <DialogDescription>Adicione uma atividade ao seu dia.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <div><Label>Título</Label><Input value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} placeholder="Ex.: Ligar para cliente Marcos Silva" /></div>
+            <div>
+              <Label>Título</Label>
+              <Input
+                value={form.titulo}
+                onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                placeholder="Ex.: Ligar para cliente Marcos Silva"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Prioridade</Label>
-                <Select value={form.prioridade} onValueChange={(v) => setForm({ ...form, prioridade: v as Prioridade })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{(["Alta", "Média", "Baixa"] as Prioridade[]).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                <Select
+                  value={form.prioridade}
+                  onValueChange={(v) => setForm({ ...form, prioridade: v as Prioridade })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(["Alta", "Média", "Baixa"] as Prioridade[]).map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Responsável</Label>
-                <Select value={form.responsavelId} onValueChange={(v) => setForm({ ...form, responsavelId: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{usuarios.map((u) => <SelectItem key={u.id} value={u.id}>{u.nome}</SelectItem>)}</SelectContent>
+                <Select
+                  value={form.responsavelId}
+                  onValueChange={(v) => setForm({ ...form, responsavelId: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {usuarios.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>
+                        {u.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
@@ -115,7 +175,9 @@ function Agenda() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setNovo(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setNovo(false)}>
+              Cancelar
+            </Button>
             <Button
               onClick={() => {
                 adicionarTarefa(form);
@@ -123,7 +185,9 @@ function Agenda() {
                 setForm({ ...form, titulo: "" });
               }}
               disabled={!form.titulo}
-            >Adicionar</Button>
+            >
+              Adicionar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -131,23 +195,39 @@ function Agenda() {
   );
 }
 
-function ItemTarefa({ t, onToggle, responsavel }: { t: any; onToggle: () => void; responsavel: string }) {
+function ItemTarefa({
+  t,
+  onToggle,
+  responsavel,
+}: {
+  t: Tarefa;
+  onToggle: () => void;
+  responsavel: string;
+}) {
   return (
     <div className="flex items-center gap-3 rounded-md border p-3 hover:bg-accent/30 transition-colors">
       <Checkbox checked={t.concluida} onCheckedChange={onToggle} />
       <div className="flex-1">
-        <p className={cn("text-sm", t.concluida && "line-through text-muted-foreground")}>{t.titulo}</p>
-        <p className="text-xs text-muted-foreground">{responsavel} · Prazo: {brDate(t.prazo)}</p>
+        <p className={cn("text-sm", t.concluida && "line-through text-muted-foreground")}>
+          {t.titulo}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {responsavel} · Prazo: {brDate(t.prazo)}
+        </p>
       </div>
-      <Badge variant="secondary" className={corPrioridade[t.prioridade as Prioridade]}>{t.prioridade}</Badge>
-      {t.concluida
-        ? <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-        : <Circle className="h-4 w-4 text-muted-foreground" />}
+      <Badge variant="secondary" className={corPrioridade[t.prioridade as Prioridade]}>
+        {t.prioridade}
+      </Badge>
+      {t.concluida ? (
+        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+      ) : (
+        <Circle className="h-4 w-4 text-muted-foreground" />
+      )}
     </div>
   );
 }
 
-function Calendario({ tarefas }: { tarefas: any[] }) {
+function Calendario({ tarefas }: { tarefas: Tarefa[] }) {
   const [mes] = React.useState(new Date());
   const ano = mes.getFullYear();
   const m = mes.getMonth();
@@ -158,7 +238,7 @@ function Calendario({ tarefas }: { tarefas: any[] }) {
   for (let i = 0; i < offset; i++) cells.push(null);
   for (let i = 1; i <= ultimoDia; i++) cells.push(i);
 
-  const tarefasPorDia: Record<number, any[]> = {};
+  const tarefasPorDia: Record<number, Tarefa[]> = {};
   tarefas.forEach((t) => {
     const d = new Date(t.prazo);
     if (d.getMonth() === m && d.getFullYear() === ano) {
@@ -173,11 +253,15 @@ function Calendario({ tarefas }: { tarefas: any[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 capitalize"><CalendarIcon className="h-4 w-4" /> {nomeMes}</CardTitle>
+        <CardTitle className="flex items-center gap-2 capitalize">
+          <CalendarIcon className="h-4 w-4" /> {nomeMes}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-7 gap-1 text-xs text-center text-muted-foreground mb-2">
-          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => <div key={d}>{d}</div>)}
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
+            <div key={d}>{d}</div>
+          ))}
         </div>
         <div className="grid grid-cols-7 gap-1">
           {cells.map((c, i) => (
@@ -186,15 +270,26 @@ function Calendario({ tarefas }: { tarefas: any[] }) {
               className={cn(
                 "min-h-20 rounded border p-1 text-xs",
                 c === null && "bg-muted/30 border-transparent",
-                c === hoje.getDate() && hoje.getMonth() === m && hoje.getFullYear() === ano && "bg-primary/10 border-primary",
+                c === hoje.getDate() &&
+                  hoje.getMonth() === m &&
+                  hoje.getFullYear() === ano &&
+                  "bg-primary/10 border-primary",
               )}
             >
               {c && <div className="font-medium mb-1">{c}</div>}
-              {c && (tarefasPorDia[c] ?? []).slice(0, 2).map((t) => (
-                <div key={t.id} className="truncate rounded bg-primary/15 text-primary px-1 py-0.5 mb-0.5">{t.titulo}</div>
-              ))}
+              {c &&
+                (tarefasPorDia[c] ?? []).slice(0, 2).map((t) => (
+                  <div
+                    key={t.id}
+                    className="truncate rounded bg-primary/15 text-primary px-1 py-0.5 mb-0.5"
+                  >
+                    {t.titulo}
+                  </div>
+                ))}
               {c && (tarefasPorDia[c]?.length ?? 0) > 2 && (
-                <div className="text-[10px] text-muted-foreground">+{tarefasPorDia[c].length - 2}</div>
+                <div className="text-[10px] text-muted-foreground">
+                  +{tarefasPorDia[c].length - 2}
+                </div>
               )}
             </div>
           ))}

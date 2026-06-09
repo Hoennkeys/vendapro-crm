@@ -87,9 +87,9 @@ function TenantsPage() {
     }
   }, [nome, slugTouched]);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     try {
-      const tenant = createTenant({ nome, slug, plan, status: "trial" });
+      const tenant = await createTenant({ nome, slug, plan, status: "trial" });
       toast.success(`Tenant "${tenant.nome}" criado.`);
       setCreateOpen(false);
       setNome("");
@@ -101,10 +101,10 @@ function TenantsPage() {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      deleteTenant(deleteTarget.id);
+      await deleteTenant(deleteTarget.id);
       toast.success(`Tenant "${deleteTarget.nome}" removido.`);
       setDeleteTarget(null);
     } catch (error) {

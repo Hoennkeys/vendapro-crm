@@ -4,6 +4,7 @@ const REGISTRY_KEY = "vendapro_platform_tenants_v1";
 
 async function clearAppStorage(page: Page) {
   await page.goto("/login");
+  await page.context().clearCookies();
   await page.evaluate((key) => {
     localStorage.clear();
     sessionStorage.clear();
@@ -23,6 +24,13 @@ async function loginAsOperational(page: Page) {
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: /Maria Operacional/i }).click();
   await page.waitForURL(/\/t\/demo\/app\/painel/, { timeout: 15_000 });
+}
+
+async function loginAsClient(page: Page) {
+  await page.goto("/login");
+  await page.waitForLoadState("networkidle");
+  await page.getByRole("button", { name: /João Cliente/i }).click();
+  await page.waitForURL(/\/t\/demo\/portal/, { timeout: 15_000 });
 }
 
 test.describe("Fase 5 — Portal Admin", () => {
@@ -101,6 +109,58 @@ test.describe("Fase 5 — Portal Admin", () => {
     await loginAsOperational(page);
     await page.goto("/admin");
     await expect(page).not.toHaveURL(/\/admin\/?$/);
+  });
+});
+
+test.describe("Fase 6 — Portal Cliente", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearAppStorage(page);
+  });
+
+  test("cliente acessa portal e vê apenas seus registros", async ({ page }) => {
+    await loginAsClient(page);
+    await expect(page.getByRole("heading", { name: /Bem-vindo, João Cliente/i })).toBeVisible();
+    await expect(page.getByText("2 registro(s)").first()).toBeVisible();
+
+    await page.getByRole("navigation").getByRole("link", { name: "Propostas" }).click();
+    await expect(page).toHaveURL(/\/t\/demo\/portal\/propostas/);
+    await expect(page.getByText("PROP-2026-001")).toBeVisible();
+    await expect(page.getByText("PROP-2026-002")).toBeVisible();
+    await expect(page.getByText("PROP-2026-101")).not.toBeVisible();
+
+    await page.getByRole("navigation").getByRole("link", { name: "Projetos" }).click();
+    await expect(page.getByText("Redesign do site institucional")).toBeVisible();
+    await expect(page.getByText("Automação linha de produção")).not.toBeVisible();
+
+    await page.getByRole("navigation").getByRole("link", { name: "Chamados" }).click();
+    await expect(page.getByText("Dúvida sobre fatura")).toBeVisible();
+    await expect(page.getByText("Problema na integração")).not.toBeVisible();
+
+    await page.getByRole("navigation").getByRole("link", { name: "Faturamento" }).click();
+    await expect(page.getByText("FAT-2026-001")).toBeVisible();
+    await expect(page.getByText("FAT-2026-101")).not.toBeVisible();
+  });
+
+  test("cliente pode abrir novo chamado", async ({ page }) => {
+    await loginAsClient(page);
+    await page.getByRole("navigation").getByRole("link", { name: "Chamados" }).click();
+    await page.getByRole("button", { name: "Abrir chamado" }).click();
+    await page.getByLabel("Título").fill("Teste E2E chamado");
+    await page.getByLabel("Descrição").fill("Descrição do chamado de teste automatizado.");
+    await page.getByRole("button", { name: "Enviar" }).click();
+    await expect(page.getByText("Teste E2E chamado")).toBeVisible();
+  });
+
+  test("usuário operacional não acessa portal cliente", async ({ page }) => {
+    await loginAsOperational(page);
+    await page.goto("/t/demo/portal");
+    await expect(page).not.toHaveURL(/\/t\/demo\/portal\/?$/);
+  });
+
+  test("cliente demo não acessa portal acme", async ({ page }) => {
+    await loginAsClient(page);
+    await page.goto("/t/acme/portal");
+    await expect(page).not.toHaveURL(/\/t\/acme\/portal/);
   });
 });
 

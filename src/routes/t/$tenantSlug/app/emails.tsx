@@ -10,10 +10,19 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useCrm } from "@/lib/crm-store";
 import { brDateTime } from "@/lib/format";
@@ -63,7 +72,9 @@ function Emails() {
           <h1 className="text-2xl font-semibold tracking-tight">Central de E-mails</h1>
           <p className="text-sm text-muted-foreground">Caixa de entrada unificada da equipe.</p>
         </div>
-        <Button onClick={() => setEscrever(true)}><Pencil className="h-4 w-4" /> Escrever</Button>
+        <Button onClick={() => setEscrever(true)}>
+          <Pencil className="h-4 w-4" /> Escrever
+        </Button>
       </div>
 
       <Card className="grid grid-cols-12 h-[calc(100%-4rem)] overflow-hidden p-0">
@@ -80,7 +91,11 @@ function Emails() {
             >
               <p.icone className="h-4 w-4" />
               <span className="flex-1 text-left">{p.id}</span>
-              {contagens[p.id] > 0 && <Badge variant="secondary" className="text-[10px]">{contagens[p.id]}</Badge>}
+              {contagens[p.id] > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {contagens[p.id]}
+                </Badge>
+              )}
             </button>
           ))}
         </div>
@@ -90,15 +105,25 @@ function Emails() {
           <div className="p-2 border-b">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar e-mails..." className="pl-8" />
+              <Input
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar e-mails..."
+                className="pl-8"
+              />
             </div>
           </div>
           <ScrollArea className="flex-1">
-            {lista.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhum e-mail.</p>}
+            {lista.length === 0 && (
+              <p className="p-4 text-sm text-muted-foreground">Nenhum e-mail.</p>
+            )}
             {lista.map((e) => (
               <button
                 key={e.id}
-                onClick={() => { setSelecionado(e); if (!e.lida) marcarEmailLido(e.id); }}
+                onClick={() => {
+                  setSelecionado(e);
+                  if (!e.lida) marcarEmailLido(e.id);
+                }}
                 className={cn(
                   "w-full text-left p-3 border-b hover:bg-accent/50 transition-colors",
                   selecionado?.id === e.id && "bg-accent",
@@ -106,8 +131,12 @@ function Emails() {
                 )}
               >
                 <div className="flex justify-between gap-2">
-                  <p className="text-sm truncate">{pasta === "Enviados" ? `Para: ${e.para}` : e.de}</p>
-                  <span className="text-[10px] text-muted-foreground shrink-0">{brDateTime(e.em)}</span>
+                  <p className="text-sm truncate">
+                    {pasta === "Enviados" ? `Para: ${e.para}` : e.de}
+                  </p>
+                  <span className="text-[10px] text-muted-foreground shrink-0">
+                    {brDateTime(e.em)}
+                  </span>
                 </div>
                 <p className="text-sm truncate">{e.assunto}</p>
                 <p className="text-xs text-muted-foreground truncate">{e.corpo}</p>
@@ -131,7 +160,9 @@ function Emails() {
               </ScrollArea>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">Selecione um e-mail.</div>
+            <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
+              Selecione um e-mail.
+            </div>
           )}
         </div>
       </Card>
@@ -150,7 +181,9 @@ function Emails() {
 }
 
 function ComporDialog({
-  open, onOpenChange, onEnviar,
+  open,
+  onOpenChange,
+  onEnviar,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -172,7 +205,12 @@ function ComporDialog({
   };
 
   React.useEffect(() => {
-    if (!open) { setPara(""); setAssunto(""); setCorpo(""); setTemplateId(""); }
+    if (!open) {
+      setPara("");
+      setAssunto("");
+      setCorpo("");
+      setTemplateId("");
+    }
   }, [open]);
 
   return (
@@ -186,24 +224,45 @@ function ComporDialog({
           <div>
             <Label>Modelos de E-mail</Label>
             <Select value={templateId} onValueChange={aplicar}>
-              <SelectTrigger><SelectValue placeholder="Selecione um modelo..." /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione um modelo..." />
+              </SelectTrigger>
               <SelectContent>
                 {emailTemplates.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.nome}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div><Label>Para</Label><Input value={para} onChange={(e) => setPara(e.target.value)} placeholder="cliente@empresa.com.br" /></div>
-          <div><Label>Assunto</Label><Input value={assunto} onChange={(e) => setAssunto(e.target.value)} /></div>
-          <div><Label>Mensagem</Label><Textarea rows={10} value={corpo} onChange={(e) => setCorpo(e.target.value)} /></div>
+          <div>
+            <Label>Para</Label>
+            <Input
+              value={para}
+              onChange={(e) => setPara(e.target.value)}
+              placeholder="cliente@empresa.com.br"
+            />
+          </div>
+          <div>
+            <Label>Assunto</Label>
+            <Input value={assunto} onChange={(e) => setAssunto(e.target.value)} />
+          </div>
+          <div>
+            <Label>Mensagem</Label>
+            <Textarea rows={10} value={corpo} onChange={(e) => setCorpo(e.target.value)} />
+          </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button
             onClick={() => onEnviar({ de: "admin@vendapro.com.br", para, assunto, corpo })}
             disabled={!para || !assunto}
-          ><SendIcon className="h-4 w-4" /> Enviar</Button>
+          >
+            <SendIcon className="h-4 w-4" /> Enviar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

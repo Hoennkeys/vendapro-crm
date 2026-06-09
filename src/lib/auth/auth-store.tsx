@@ -1,6 +1,9 @@
 import { useRouter, useRouteContext } from "@tanstack/react-router";
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
+import { loginServerFn, logoutServerFn } from "@/lib/api/auth.functions";
+import { isClientServerApiEnabled } from "@/lib/client/server-api";
+
 import { authenticate, clearSession, persistSession } from "./session";
 import type { Session } from "./types";
 
@@ -18,6 +21,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string) => {
+      if (isClientServerApiEnabled()) {
+        const nextSession = await loginServerFn({ data: { email, password } });
+        await router.invalidate();
+        return nextSession;
+      }
+
       const nextSession = authenticate(email, password);
       if (!nextSession) {
         throw new Error("E-mail ou senha inválidos.");
@@ -30,7 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    clearSession();
+    if (isClientServerApiEnabled()) {
+      await logoutServerFn();
+    } else {
+      clearSession();
+    }
     await router.invalidate();
     await router.navigate({ to: "/login" });
   }, [router]);

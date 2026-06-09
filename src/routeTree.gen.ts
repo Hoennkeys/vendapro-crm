@@ -28,6 +28,10 @@ import { Route as TTenantSlugPortalRouteRouteImport } from './routes/t/$tenantSl
 import { Route as TTenantSlugAppRouteRouteImport } from './routes/t/$tenantSlug/app/route'
 import { Route as TTenantSlugPortalIndexRouteImport } from './routes/t/$tenantSlug/portal/index'
 import { Route as TTenantSlugAppIndexRouteImport } from './routes/t/$tenantSlug/app/index'
+import { Route as TTenantSlugPortalPropostasRouteImport } from './routes/t/$tenantSlug/portal/propostas'
+import { Route as TTenantSlugPortalProjetosRouteImport } from './routes/t/$tenantSlug/portal/projetos'
+import { Route as TTenantSlugPortalFaturamentoRouteImport } from './routes/t/$tenantSlug/portal/faturamento'
+import { Route as TTenantSlugPortalChamadosRouteImport } from './routes/t/$tenantSlug/portal/chamados'
 import { Route as TTenantSlugAppPropostasRouteImport } from './routes/t/$tenantSlug/app/propostas'
 import { Route as TTenantSlugAppPainelRouteImport } from './routes/t/$tenantSlug/app/painel'
 import { Route as TTenantSlugAppEmailsRouteImport } from './routes/t/$tenantSlug/app/emails'
@@ -132,6 +136,30 @@ const TTenantSlugAppIndexRoute = TTenantSlugAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TTenantSlugAppRouteRoute,
 } as any)
+const TTenantSlugPortalPropostasRoute =
+  TTenantSlugPortalPropostasRouteImport.update({
+    id: '/propostas',
+    path: '/propostas',
+    getParentRoute: () => TTenantSlugPortalRouteRoute,
+  } as any)
+const TTenantSlugPortalProjetosRoute =
+  TTenantSlugPortalProjetosRouteImport.update({
+    id: '/projetos',
+    path: '/projetos',
+    getParentRoute: () => TTenantSlugPortalRouteRoute,
+  } as any)
+const TTenantSlugPortalFaturamentoRoute =
+  TTenantSlugPortalFaturamentoRouteImport.update({
+    id: '/faturamento',
+    path: '/faturamento',
+    getParentRoute: () => TTenantSlugPortalRouteRoute,
+  } as any)
+const TTenantSlugPortalChamadosRoute =
+  TTenantSlugPortalChamadosRouteImport.update({
+    id: '/chamados',
+    path: '/chamados',
+    getParentRoute: () => TTenantSlugPortalRouteRoute,
+  } as any)
 const TTenantSlugAppPropostasRoute = TTenantSlugAppPropostasRouteImport.update({
   id: '/propostas',
   path: '/propostas',
@@ -200,6 +228,10 @@ export interface FileRoutesByFullPath {
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
+  '/t/$tenantSlug/portal/chamados': typeof TTenantSlugPortalChamadosRoute
+  '/t/$tenantSlug/portal/faturamento': typeof TTenantSlugPortalFaturamentoRoute
+  '/t/$tenantSlug/portal/projetos': typeof TTenantSlugPortalProjetosRoute
+  '/t/$tenantSlug/portal/propostas': typeof TTenantSlugPortalPropostasRoute
   '/t/$tenantSlug/app/': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal/': typeof TTenantSlugPortalIndexRoute
   '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
@@ -226,6 +258,10 @@ export interface FileRoutesByTo {
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
+  '/t/$tenantSlug/portal/chamados': typeof TTenantSlugPortalChamadosRoute
+  '/t/$tenantSlug/portal/faturamento': typeof TTenantSlugPortalFaturamentoRoute
+  '/t/$tenantSlug/portal/projetos': typeof TTenantSlugPortalProjetosRoute
+  '/t/$tenantSlug/portal/propostas': typeof TTenantSlugPortalPropostasRoute
   '/t/$tenantSlug/app': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal': typeof TTenantSlugPortalIndexRoute
   '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
@@ -256,6 +292,10 @@ export interface FileRoutesById {
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
+  '/t/$tenantSlug/portal/chamados': typeof TTenantSlugPortalChamadosRoute
+  '/t/$tenantSlug/portal/faturamento': typeof TTenantSlugPortalFaturamentoRoute
+  '/t/$tenantSlug/portal/projetos': typeof TTenantSlugPortalProjetosRoute
+  '/t/$tenantSlug/portal/propostas': typeof TTenantSlugPortalPropostasRoute
   '/t/$tenantSlug/app/': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal/': typeof TTenantSlugPortalIndexRoute
   '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
@@ -287,6 +327,10 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
+    | '/t/$tenantSlug/portal/chamados'
+    | '/t/$tenantSlug/portal/faturamento'
+    | '/t/$tenantSlug/portal/projetos'
+    | '/t/$tenantSlug/portal/propostas'
     | '/t/$tenantSlug/app/'
     | '/t/$tenantSlug/portal/'
     | '/t/$tenantSlug/app/funil/$pipelineId'
@@ -313,6 +357,10 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
+    | '/t/$tenantSlug/portal/chamados'
+    | '/t/$tenantSlug/portal/faturamento'
+    | '/t/$tenantSlug/portal/projetos'
+    | '/t/$tenantSlug/portal/propostas'
     | '/t/$tenantSlug/app'
     | '/t/$tenantSlug/portal'
     | '/t/$tenantSlug/app/funil/$pipelineId'
@@ -342,6 +390,10 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
+    | '/t/$tenantSlug/portal/chamados'
+    | '/t/$tenantSlug/portal/faturamento'
+    | '/t/$tenantSlug/portal/projetos'
+    | '/t/$tenantSlug/portal/propostas'
     | '/t/$tenantSlug/app/'
     | '/t/$tenantSlug/portal/'
     | '/t/$tenantSlug/app/funil/$pipelineId'
@@ -497,6 +549,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TTenantSlugAppIndexRouteImport
       parentRoute: typeof TTenantSlugAppRouteRoute
     }
+    '/t/$tenantSlug/portal/propostas': {
+      id: '/t/$tenantSlug/portal/propostas'
+      path: '/propostas'
+      fullPath: '/t/$tenantSlug/portal/propostas'
+      preLoaderRoute: typeof TTenantSlugPortalPropostasRouteImport
+      parentRoute: typeof TTenantSlugPortalRouteRoute
+    }
+    '/t/$tenantSlug/portal/projetos': {
+      id: '/t/$tenantSlug/portal/projetos'
+      path: '/projetos'
+      fullPath: '/t/$tenantSlug/portal/projetos'
+      preLoaderRoute: typeof TTenantSlugPortalProjetosRouteImport
+      parentRoute: typeof TTenantSlugPortalRouteRoute
+    }
+    '/t/$tenantSlug/portal/faturamento': {
+      id: '/t/$tenantSlug/portal/faturamento'
+      path: '/faturamento'
+      fullPath: '/t/$tenantSlug/portal/faturamento'
+      preLoaderRoute: typeof TTenantSlugPortalFaturamentoRouteImport
+      parentRoute: typeof TTenantSlugPortalRouteRoute
+    }
+    '/t/$tenantSlug/portal/chamados': {
+      id: '/t/$tenantSlug/portal/chamados'
+      path: '/chamados'
+      fullPath: '/t/$tenantSlug/portal/chamados'
+      preLoaderRoute: typeof TTenantSlugPortalChamadosRouteImport
+      parentRoute: typeof TTenantSlugPortalRouteRoute
+    }
     '/t/$tenantSlug/app/propostas': {
       id: '/t/$tenantSlug/app/propostas'
       path: '/propostas'
@@ -602,11 +682,19 @@ const TTenantSlugAppRouteRouteWithChildren =
   TTenantSlugAppRouteRoute._addFileChildren(TTenantSlugAppRouteRouteChildren)
 
 interface TTenantSlugPortalRouteRouteChildren {
+  TTenantSlugPortalChamadosRoute: typeof TTenantSlugPortalChamadosRoute
+  TTenantSlugPortalFaturamentoRoute: typeof TTenantSlugPortalFaturamentoRoute
+  TTenantSlugPortalProjetosRoute: typeof TTenantSlugPortalProjetosRoute
+  TTenantSlugPortalPropostasRoute: typeof TTenantSlugPortalPropostasRoute
   TTenantSlugPortalIndexRoute: typeof TTenantSlugPortalIndexRoute
 }
 
 const TTenantSlugPortalRouteRouteChildren: TTenantSlugPortalRouteRouteChildren =
   {
+    TTenantSlugPortalChamadosRoute: TTenantSlugPortalChamadosRoute,
+    TTenantSlugPortalFaturamentoRoute: TTenantSlugPortalFaturamentoRoute,
+    TTenantSlugPortalProjetosRoute: TTenantSlugPortalProjetosRoute,
+    TTenantSlugPortalPropostasRoute: TTenantSlugPortalPropostasRoute,
     TTenantSlugPortalIndexRoute: TTenantSlugPortalIndexRoute,
   }
 

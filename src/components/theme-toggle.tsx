@@ -27,7 +27,9 @@ export function ThemeToggle() {
     document.documentElement.classList.toggle("dark", next === "dark");
     try {
       localStorage.setItem(KEY, next);
-    } catch {}
+    } catch {
+      // localStorage indisponível (quota, modo privado, etc.)
+    }
   };
 
   return (

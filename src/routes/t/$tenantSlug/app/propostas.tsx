@@ -11,13 +11,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useCrm } from "@/lib/crm-store";
 import { brl, brDate } from "@/lib/format";
+import { useTenant } from "@/lib/tenant/tenant-store";
 import type { ItemProposta, Proposta, StatusProposta } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -34,13 +44,16 @@ const corStatus: Record<StatusProposta, string> = {
 
 function Propostas() {
   const { propostas, adicionarProposta, atualizarStatusProposta, usuarios } = useCrm();
+  const { whiteLabel } = useTenant();
 
   const [cliente, setCliente] = React.useState("");
   const [cnpj, setCnpj] = React.useState("");
   const [validadeDias, setValidadeDias] = React.useState(15);
   const [condicoes, setCondicoes] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
-  const [itens, setItens] = React.useState<ItemProposta[]>([{ descricao: "", qtd: 1, valorUnit: 0 }]);
+  const [itens, setItens] = React.useState<ItemProposta[]>([
+    { descricao: "", qtd: 1, valorUnit: 0 },
+  ]);
 
   const total = itens.reduce((a, i) => a + i.qtd * i.valorUnit, 0);
 
@@ -50,25 +63,37 @@ function Propostas() {
 
   const gerarPdf = (p: Partial<Proposta>) => {
     const doc = new jsPDF();
-    doc.setFontSize(18); doc.text("Proposta Comercial — VendaPro", 14, 18);
+    doc.setFontSize(18);
+    doc.text("Proposta Comercial — VendaPro", 14, 18);
     doc.setFontSize(10);
     doc.text(`Cliente: ${p.cliente ?? cliente}`, 14, 28);
     doc.text(`CNPJ: ${p.cnpj ?? cnpj}`, 14, 34);
     doc.text(`Número: ${p.numero ?? "—"}`, 14, 40);
-    doc.text(`Validade: ${brDate(p.validade ?? new Date(Date.now() + validadeDias * 86400000))}`, 14, 46);
+    doc.text(
+      `Validade: ${brDate(p.validade ?? new Date(Date.now() + validadeDias * 86400000))}`,
+      14,
+      46,
+    );
 
     autoTable(doc, {
       startY: 54,
       head: [["Descrição", "Qtd.", "Valor Unit.", "Total"]],
-      body: (p.itens ?? itens).map((i) => [i.descricao, String(i.qtd), brl(i.valorUnit), brl(i.qtd * i.valorUnit)]),
+      body: (p.itens ?? itens).map((i) => [
+        i.descricao,
+        String(i.qtd),
+        brl(i.valorUnit),
+        brl(i.qtd * i.valorUnit),
+      ]),
       foot: [["", "", "Total geral", brl(p.valor ?? total)]],
       headStyles: { fillColor: [99, 102, 241] },
       footStyles: { fillColor: [240, 240, 245], textColor: 20 },
     });
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    const finalY = (doc as jsPDF & { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
     doc.text(`Condições: ${p.condicoes ?? condicoes}`, 14, finalY);
-    if ((p.observacoes ?? observacoes)) doc.text(`Observações: ${p.observacoes ?? observacoes}`, 14, finalY + 6);
-    doc.setFontSize(8); doc.text("VendaPro CRM · vendapro.com.br", 14, 285);
+    if (p.observacoes ?? observacoes)
+      doc.text(`Observações: ${p.observacoes ?? observacoes}`, 14, finalY + 6);
+    doc.setFontSize(8);
+    doc.text("VendaPro CRM · vendapro.com.br", 14, 285);
     doc.save(`${p.numero ?? "proposta"}.pdf`);
   };
 
@@ -79,8 +104,16 @@ function Propostas() {
     }
     const validade = new Date(Date.now() + validadeDias * 86400000).toISOString();
     const nova = adicionarProposta({
-      cliente, cnpj, valor: total, validade, responsavelId: usuarios[0]?.id ?? "",
-      itens, condicoes, observacoes,
+      tenantId: whiteLabel.tenantId,
+      clientId: "",
+      cliente,
+      cnpj,
+      valor: total,
+      validade,
+      responsavelId: usuarios[0]?.id ?? "",
+      itens,
+      condicoes,
+      observacoes,
     });
     toast.success(`Proposta ${nova.numero} criada!`);
   };
@@ -95,32 +128,92 @@ function Propostas() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Gerador de Propostas</h1>
-        <p className="text-sm text-muted-foreground">Crie propostas comerciais profissionais em PDF.</p>
+        <p className="text-sm text-muted-foreground">
+          Crie propostas comerciais profissionais em PDF.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader><CardTitle>Dados da Proposta</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Dados da Proposta</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Cliente</Label><Input value={cliente} onChange={(e) => setCliente(e.target.value)} placeholder="Padaria São João" /></div>
-              <div><Label>CNPJ</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} placeholder="00.000.000/0001-00" /></div>
-              <div><Label>Validade (dias)</Label><Input type="number" value={validadeDias} onChange={(e) => setValidadeDias(Number(e.target.value))} /></div>
-              <div><Label>Condições</Label><Input value={condicoes} onChange={(e) => setCondicoes(e.target.value)} /></div>
+              <div>
+                <Label>Cliente</Label>
+                <Input
+                  value={cliente}
+                  onChange={(e) => setCliente(e.target.value)}
+                  placeholder="Padaria São João"
+                />
+              </div>
+              <div>
+                <Label>CNPJ</Label>
+                <Input
+                  value={cnpj}
+                  onChange={(e) => setCnpj(e.target.value)}
+                  placeholder="00.000.000/0001-00"
+                />
+              </div>
+              <div>
+                <Label>Validade (dias)</Label>
+                <Input
+                  type="number"
+                  value={validadeDias}
+                  onChange={(e) => setValidadeDias(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label>Condições</Label>
+                <Input value={condicoes} onChange={(e) => setCondicoes(e.target.value)} />
+              </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Itens</Label>
-                <Button variant="outline" size="sm" onClick={() => setItens([...itens, { descricao: "", qtd: 1, valorUnit: 0 }])}><Plus className="h-3 w-3" /> Item</Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setItens([...itens, { descricao: "", qtd: 1, valorUnit: 0 }])}
+                >
+                  <Plus className="h-3 w-3" /> Item
+                </Button>
               </div>
               <div className="space-y-2">
                 {itens.map((it, i) => (
                   <div key={i} className="grid grid-cols-12 gap-2 items-end">
-                    <div className="col-span-6"><Input value={it.descricao} onChange={(e) => atualizarItem(i, { descricao: e.target.value })} placeholder="Descrição" /></div>
-                    <div className="col-span-2"><Input type="number" value={it.qtd} onChange={(e) => atualizarItem(i, { qtd: Number(e.target.value) })} /></div>
-                    <div className="col-span-3"><Input type="number" value={it.valorUnit} onChange={(e) => atualizarItem(i, { valorUnit: Number(e.target.value) })} /></div>
-                    <div className="col-span-1"><Button variant="ghost" size="icon" onClick={() => setItens(itens.filter((_, idx) => idx !== i))}><Trash2 className="h-4 w-4" /></Button></div>
+                    <div className="col-span-6">
+                      <Input
+                        value={it.descricao}
+                        onChange={(e) => atualizarItem(i, { descricao: e.target.value })}
+                        placeholder="Descrição"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Input
+                        type="number"
+                        value={it.qtd}
+                        onChange={(e) => atualizarItem(i, { qtd: Number(e.target.value) })}
+                      />
+                    </div>
+                    <div className="col-span-3">
+                      <Input
+                        type="number"
+                        value={it.valorUnit}
+                        onChange={(e) => atualizarItem(i, { valorUnit: Number(e.target.value) })}
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setItens(itens.filter((_, idx) => idx !== i))}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -128,19 +221,31 @@ function Propostas() {
 
             <div>
               <Label>Observações</Label>
-              <Textarea rows={3} value={observacoes} onChange={(e) => setObservacoes(e.target.value)} />
+              <Textarea
+                rows={3}
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
+              />
             </div>
 
             <div className="flex flex-wrap gap-2 justify-end pt-2 border-t">
-              <Button variant="outline" onClick={copiarLink}><Link2 className="h-4 w-4" /> Gerar link compartilhável</Button>
-              <Button variant="outline" onClick={() => gerarPdf({})}><Download className="h-4 w-4" /> Baixar PDF</Button>
-              <Button onClick={salvar}><FileText className="h-4 w-4" /> Salvar Proposta</Button>
+              <Button variant="outline" onClick={copiarLink}>
+                <Link2 className="h-4 w-4" /> Gerar link compartilhável
+              </Button>
+              <Button variant="outline" onClick={() => gerarPdf({})}>
+                <Download className="h-4 w-4" /> Baixar PDF
+              </Button>
+              <Button onClick={salvar}>
+                <FileText className="h-4 w-4" /> Salvar Proposta
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>Pré-visualização</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Pré-visualização</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="rounded-md border p-4 bg-muted/30 space-y-2">
               <div className="flex items-center justify-between border-b pb-2">
@@ -152,22 +257,29 @@ function Propostas() {
               <div className="space-y-1 mt-2">
                 {itens.map((i, idx) => (
                   <div key={idx} className="flex justify-between text-xs">
-                    <span>{i.descricao || "Item"} × {i.qtd}</span>
+                    <span>
+                      {i.descricao || "Item"} × {i.qtd}
+                    </span>
                     <span>{brl(i.qtd * i.valorUnit)}</span>
                   </div>
                 ))}
               </div>
               <div className="flex justify-between border-t pt-2 font-semibold">
-                <span>Total</span><span>{brl(total)}</span>
+                <span>Total</span>
+                <span>{brl(total)}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground">Validade: {validadeDias} dias · {condicoes}</p>
+              <p className="text-[10px] text-muted-foreground">
+                Validade: {validadeDias} dias · {condicoes}
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader><CardTitle>Propostas Recentes</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Propostas Recentes</CardTitle>
+        </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
@@ -196,16 +308,31 @@ function Propostas() {
                   <TableCell>{brl(p.valor)}</TableCell>
                   <TableCell>{brDate(p.criadaEm)}</TableCell>
                   <TableCell>{brDate(p.validade)}</TableCell>
-                  <TableCell><Badge variant="secondary" className={cn(corStatus[p.status])}>{p.status}</Badge></TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className={cn(corStatus[p.status])}>
+                      {p.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="inline-flex items-center gap-1">
-                      <Select value={p.status} onValueChange={(v) => atualizarStatusProposta(p.id, v as StatusProposta)}>
-                        <SelectTrigger className="h-8 w-[110px] text-xs"><SelectValue /></SelectTrigger>
+                      <Select
+                        value={p.status}
+                        onValueChange={(v) => atualizarStatusProposta(p.id, v as StatusProposta)}
+                      >
+                        <SelectTrigger className="h-8 w-[110px] text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
-                          {(["Pendente", "Aceita", "Vencida"] as StatusProposta[]).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                          {(["Pendente", "Aceita", "Vencida"] as StatusProposta[]).map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
-                      <Button variant="ghost" size="icon" onClick={() => gerarPdf(p)}><Download className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => gerarPdf(p)}>
+                        <Download className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

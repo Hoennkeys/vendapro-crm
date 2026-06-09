@@ -68,12 +68,13 @@ function PipelinePage() {
   const { tenantSlug, pipelineId } = Route.useParams();
   const { pipeline: pipelineFromContext } = Route.useRouteContext();
   const { whiteLabel } = useTenant();
-  const pipeline =
-    pipelineFromContext ?? getPipelineById(whiteLabel.tenantId, pipelineId)!;
-  const { leads, usuarios, moverPipelineItem, adicionarLead } = useCrm();
+  const pipeline = pipelineFromContext ?? getPipelineById(whiteLabel.tenantId, pipelineId)!;
+  const { leads, pipelineItems, usuarios, moverPipelineItem, adicionarLead } = useCrm();
 
   const isSales = pipeline.id === SALES_PIPELINE_ID;
-  const items = isSales ? leadsToPipelineItems(leads, pipeline.id) : [];
+  const items = isSales
+    ? leadsToPipelineItems(leads, pipeline.id)
+    : pipelineItems.filter((item) => item.pipelineId === pipeline.id);
 
   const [selecionado, setSelecionado] = React.useState<PipelineItem | null>(null);
   const [novoOpen, setNovoOpen] = React.useState(false);

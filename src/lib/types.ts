@@ -68,6 +68,8 @@ export type StatusProposta = "Pendente" | "Aceita" | "Vencida";
 
 export type Proposta = {
   id: string;
+  tenantId: string;
+  clientId: string;
   numero: string;
   cliente: string;
   cnpj: string;
@@ -79,6 +81,33 @@ export type Proposta = {
   itens: ItemProposta[];
   condicoes: string;
   observacoes: string;
+};
+
+export type StatusChamado = "Aberto" | "Em andamento" | "Resolvido" | "Fechado";
+
+export type Chamado = {
+  id: string;
+  tenantId: string;
+  clientId: string;
+  titulo: string;
+  descricao: string;
+  status: StatusChamado;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
+export type StatusFatura = "Pendente" | "Paga" | "Vencida" | "Cancelada";
+
+export type Fatura = {
+  id: string;
+  tenantId: string;
+  clientId: string;
+  numero: string;
+  descricao: string;
+  valor: number;
+  vencimento: string;
+  status: StatusFatura;
+  emitidaEm: string;
 };
 
 export type Usuario = {
