@@ -7,6 +7,8 @@ import {
   conversasMock,
   propostasMock,
 } from "./mock-data";
+import { stageIdToEtapa } from "./pipelines/adapter";
+import { SALES_PIPELINE_ID } from "./pipelines/defaults";
 import type {
   Lead, Tarefa, EmailMsg, Conversa, Proposta, Usuario, Etapa, Mensagem, TimelineItem,
 } from "./types";
@@ -24,6 +26,7 @@ type State = {
 type Ctx = State & {
   setFiltroVendedor: (v: string) => void;
   moverLead: (id: string, etapa: Etapa) => void;
+  moverPipelineItem: (pipelineId: string, itemId: string, stageId: string) => void;
   adicionarLead: (
     lead: Omit<Lead, "id" | "criadoEm" | "timeline"> & Partial<Pick<Lead, "timeline">>,
     opts?: { conversaId?: string },
@@ -88,6 +91,15 @@ export function CrmProvider({ children }: { children: React.ReactNode }) {
           ...s,
           leads: s.leads.map((l) => (l.id === id ? { ...l, etapa } : l)),
         })),
+      moverPipelineItem: (pipelineId, itemId, stageId) => {
+        if (pipelineId !== SALES_PIPELINE_ID) return;
+        const etapa = stageIdToEtapa(stageId);
+        if (!etapa) return;
+        setState((s) => ({
+          ...s,
+          leads: s.leads.map((l) => (l.id === itemId ? { ...l, etapa } : l)),
+        }));
+      },
       adicionarLead: (lead, opts) => {
         const novo: Lead = {
           ...lead,

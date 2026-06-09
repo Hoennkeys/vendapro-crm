@@ -21,11 +21,17 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { SALES_PIPELINE_ID } from "@/lib/pipelines/defaults";
 import { useTenant } from "@/lib/tenant/tenant-store";
 
 const navItems = [
   { title: "Painel", to: "/t/$tenantSlug/app/painel" as const, icon: LayoutDashboard },
-  { title: "Funil de Vendas", to: "/t/$tenantSlug/app/funil" as const, icon: KanbanSquare },
+  {
+    title: "Funil de Vendas",
+    to: "/t/$tenantSlug/app/funil/$pipelineId" as const,
+    icon: KanbanSquare,
+    pipelineId: SALES_PIPELINE_ID,
+  },
   { title: "Chats", to: "/t/$tenantSlug/app/chats" as const, icon: MessageSquare },
   { title: "E-mails", to: "/t/$tenantSlug/app/emails" as const, icon: Mail },
   { title: "Agenda", to: "/t/$tenantSlug/app/agenda" as const, icon: CalendarDays },
@@ -55,20 +61,29 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.to}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === `/t/${tenantSlug}/app/${item.to.split("/").pop()}`}
-                    tooltip={item.title}
-                  >
-                    <Link to={item.to} params={{ tenantSlug }}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const segment = item.to.split("/").pop() ?? "";
+                const isFunil = "pipelineId" in item;
+                const isActive = isFunil
+                  ? pathname.startsWith(`/t/${tenantSlug}/app/funil`)
+                  : pathname === `/t/${tenantSlug}/app/${segment}`;
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                      <Link
+                        to={item.to}
+                        params={
+                          isFunil ? { tenantSlug, pipelineId: item.pipelineId } : { tenantSlug }
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
