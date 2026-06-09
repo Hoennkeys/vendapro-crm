@@ -32,7 +32,7 @@ export function requireTenantAppAccess(
 ) {
   const session = requireAuth(context, returnTo);
 
-  if (!isValidTenantSlug(tenantSlug)) {
+  if (typeof window !== "undefined" && !isValidTenantSlug(tenantSlug)) {
     throw redirect({ to: "/login" });
   }
 
@@ -51,7 +51,7 @@ export function requireClientPortalAccess(
 ) {
   const session = requireAuth(context, returnTo);
 
-  if (!isValidTenantSlug(tenantSlug)) {
+  if (typeof window !== "undefined" && !isValidTenantSlug(tenantSlug)) {
     throw redirect({ to: "/login" });
   }
 

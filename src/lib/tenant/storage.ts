@@ -1,3 +1,4 @@
+import { getPlatformTenantBySlug } from "@/lib/admin/tenant-registry";
 import { getDefaultWhiteLabel } from "./defaults";
 import type { TenantWhiteLabel } from "./types";
 
@@ -8,8 +9,14 @@ function storageKey(slug: string): string {
   return `${STORAGE_PREFIX}${slug}_${STORAGE_VERSION}`;
 }
 
+function resolveBaseWhiteLabel(slug: string): TenantWhiteLabel | null {
+  const fromRegistry = getPlatformTenantBySlug(slug);
+  if (fromRegistry) return structuredClone(fromRegistry.whiteLabel);
+  return getDefaultWhiteLabel(slug);
+}
+
 export function loadTenantWhiteLabel(slug: string): TenantWhiteLabel {
-  const defaults = getDefaultWhiteLabel(slug);
+  const defaults = resolveBaseWhiteLabel(slug);
   if (!defaults) {
     throw new Error(`Tenant desconhecido: ${slug}`);
   }

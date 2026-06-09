@@ -4,6 +4,8 @@ import { TenantProvider } from "@/lib/tenant/tenant-store";
 
 export const Route = createFileRoute("/t/$tenantSlug")({
   beforeLoad: ({ params }) => {
+    // SSR não tem localStorage — validação completa ocorre no cliente após hidratação.
+    if (typeof window === "undefined") return;
     if (!isValidTenantSlug(params.tenantSlug)) {
       throw redirect({ to: "/login" });
     }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { LogIn, Zap } from "lucide-react";
 
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { redirect: redirectTo } = Route.useSearch();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -48,7 +48,7 @@ function LoginPage() {
     try {
       const session = await login(email, password);
       const target = safeRedirectPath(redirectTo) ?? getDefaultPortalPath(session);
-      await navigate({ to: target });
+      await router.navigate({ to: target, replace: true });
       toast.success(`Bem-vindo, ${session.user.nome}!`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Falha no login.");
@@ -64,7 +64,7 @@ function LoginPage() {
     try {
       const session = await login(mockEmail, mockPassword);
       const target = safeRedirectPath(redirectTo) ?? getDefaultPortalPath(session);
-      await navigate({ to: target });
+      await router.navigate({ to: target, replace: true });
       toast.success(`Bem-vindo, ${session.user.nome}!`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Falha no login.");

@@ -1,4 +1,4 @@
-import { ACME_TENANT_SLUG, DEMO_TENANT_SLUG } from "./constants";
+import { getPlatformTenantBySlug, listPlatformTenants } from "@/lib/admin/tenant-registry";
 import { DEFAULT_WHITE_LABELS } from "./defaults";
 import type { TenantWhiteLabel } from "./types";
 
@@ -8,27 +8,25 @@ export type MockTenant = {
   nome: string;
 };
 
-export const MOCK_TENANTS: Record<string, MockTenant> = {
-  [DEMO_TENANT_SLUG]: {
-    id: DEFAULT_WHITE_LABELS.demo.tenantId,
-    slug: DEMO_TENANT_SLUG,
-    nome: DEFAULT_WHITE_LABELS.demo.nome,
-  },
-  [ACME_TENANT_SLUG]: {
-    id: DEFAULT_WHITE_LABELS.acme.tenantId,
-    slug: ACME_TENANT_SLUG,
-    nome: DEFAULT_WHITE_LABELS.acme.nome,
-  },
-};
-
 export function isValidTenantSlug(slug: string): boolean {
-  return slug in MOCK_TENANTS;
+  return getPlatformTenantBySlug(slug) !== null;
 }
 
 export function getMockTenant(slug: string): MockTenant | null {
-  return MOCK_TENANTS[slug] ?? null;
+  const tenant = getPlatformTenantBySlug(slug);
+  if (!tenant) return null;
+  return { id: tenant.id, slug: tenant.slug, nome: tenant.nome };
 }
 
 export function getMockTenantWhiteLabel(slug: string): TenantWhiteLabel | null {
-  return DEFAULT_WHITE_LABELS[slug] ?? null;
+  const tenant = getPlatformTenantBySlug(slug);
+  if (tenant) return structuredClone(tenant.whiteLabel);
+  return DEFAULT_WHITE_LABELS[slug] ? structuredClone(DEFAULT_WHITE_LABELS[slug]) : null;
+}
+
+/** @deprecated Use getMockTenant() ou listPlatformTenants(). */
+export function getMockTenantsRecord(): Record<string, MockTenant> {
+  return Object.fromEntries(
+    listPlatformTenants().map((t) => [t.slug, { id: t.id, slug: t.slug, nome: t.nome }]),
+  );
 }

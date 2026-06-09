@@ -28,8 +28,23 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             to="/admin"
             className="text-muted-foreground transition-colors hover:text-foreground"
             activeProps={{ className: "font-medium text-foreground" }}
+            activeOptions={{ exact: true }}
           >
             Dashboard
+          </Link>
+          <Link
+            to="/admin/tenants"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+            activeProps={{ className: "font-medium text-foreground" }}
+          >
+            Tenants
+          </Link>
+          <Link
+            to="/admin/billing"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+            activeProps={{ className: "font-medium text-foreground" }}
+          >
+            Billing
           </Link>
         </nav>
         <div className="flex-1" />

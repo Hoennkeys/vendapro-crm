@@ -20,18 +20,22 @@ import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminBillingRouteImport } from './routes/admin/billing'
 import { Route as TTenantSlugRouteRouteImport } from './routes/t/$tenantSlug/route'
+import { Route as AdminTenantsIndexRouteImport } from './routes/admin/tenants/index'
+import { Route as AdminTenantsTenantIdRouteImport } from './routes/admin/tenants/$tenantId'
 import { Route as TTenantSlugPortalRouteRouteImport } from './routes/t/$tenantSlug/portal/route'
 import { Route as TTenantSlugAppRouteRouteImport } from './routes/t/$tenantSlug/app/route'
 import { Route as TTenantSlugPortalIndexRouteImport } from './routes/t/$tenantSlug/portal/index'
 import { Route as TTenantSlugAppIndexRouteImport } from './routes/t/$tenantSlug/app/index'
 import { Route as TTenantSlugAppPropostasRouteImport } from './routes/t/$tenantSlug/app/propostas'
 import { Route as TTenantSlugAppPainelRouteImport } from './routes/t/$tenantSlug/app/painel'
-import { Route as TTenantSlugAppFunilRouteImport } from './routes/t/$tenantSlug/app/funil'
 import { Route as TTenantSlugAppEmailsRouteImport } from './routes/t/$tenantSlug/app/emails'
 import { Route as TTenantSlugAppConfiguracoesRouteImport } from './routes/t/$tenantSlug/app/configuracoes'
 import { Route as TTenantSlugAppChatsRouteImport } from './routes/t/$tenantSlug/app/chats'
 import { Route as TTenantSlugAppAgendaRouteImport } from './routes/t/$tenantSlug/app/agenda'
+import { Route as TTenantSlugAppFunilIndexRouteImport } from './routes/t/$tenantSlug/app/funil/index'
+import { Route as TTenantSlugAppFunilPipelineIdRouteImport } from './routes/t/$tenantSlug/app/funil/$pipelineId'
 
 const PropostasRoute = PropostasRouteImport.update({
   id: '/propostas',
@@ -88,10 +92,25 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminBillingRoute = AdminBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const TTenantSlugRouteRoute = TTenantSlugRouteRouteImport.update({
   id: '/t/$tenantSlug',
   path: '/t/$tenantSlug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTenantsIndexRoute = AdminTenantsIndexRouteImport.update({
+  id: '/tenants/',
+  path: '/tenants/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTenantsTenantIdRoute = AdminTenantsTenantIdRouteImport.update({
+  id: '/tenants/$tenantId',
+  path: '/tenants/$tenantId',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const TTenantSlugPortalRouteRoute = TTenantSlugPortalRouteRouteImport.update({
   id: '/portal',
@@ -123,11 +142,6 @@ const TTenantSlugAppPainelRoute = TTenantSlugAppPainelRouteImport.update({
   path: '/painel',
   getParentRoute: () => TTenantSlugAppRouteRoute,
 } as any)
-const TTenantSlugAppFunilRoute = TTenantSlugAppFunilRouteImport.update({
-  id: '/funil',
-  path: '/funil',
-  getParentRoute: () => TTenantSlugAppRouteRoute,
-} as any)
 const TTenantSlugAppEmailsRoute = TTenantSlugAppEmailsRouteImport.update({
   id: '/emails',
   path: '/emails',
@@ -149,6 +163,18 @@ const TTenantSlugAppAgendaRoute = TTenantSlugAppAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => TTenantSlugAppRouteRoute,
 } as any)
+const TTenantSlugAppFunilIndexRoute =
+  TTenantSlugAppFunilIndexRouteImport.update({
+    id: '/funil/',
+    path: '/funil/',
+    getParentRoute: () => TTenantSlugAppRouteRoute,
+  } as any)
+const TTenantSlugAppFunilPipelineIdRoute =
+  TTenantSlugAppFunilPipelineIdRouteImport.update({
+    id: '/funil/$pipelineId',
+    path: '/funil/$pipelineId',
+    getParentRoute: () => TTenantSlugAppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,18 +188,22 @@ export interface FileRoutesByFullPath {
   '/painel': typeof PainelRoute
   '/propostas': typeof PropostasRoute
   '/t/$tenantSlug': typeof TTenantSlugRouteRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin/': typeof AdminIndexRoute
   '/t/$tenantSlug/app': typeof TTenantSlugAppRouteRouteWithChildren
   '/t/$tenantSlug/portal': typeof TTenantSlugPortalRouteRouteWithChildren
+  '/admin/tenants/$tenantId': typeof AdminTenantsTenantIdRoute
+  '/admin/tenants/': typeof AdminTenantsIndexRoute
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
-  '/t/$tenantSlug/app/funil': typeof TTenantSlugAppFunilRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
   '/t/$tenantSlug/app/': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal/': typeof TTenantSlugPortalIndexRoute
+  '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
+  '/t/$tenantSlug/app/funil/': typeof TTenantSlugAppFunilIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,16 +216,20 @@ export interface FileRoutesByTo {
   '/painel': typeof PainelRoute
   '/propostas': typeof PropostasRoute
   '/t/$tenantSlug': typeof TTenantSlugRouteRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/tenants/$tenantId': typeof AdminTenantsTenantIdRoute
+  '/admin/tenants': typeof AdminTenantsIndexRoute
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
-  '/t/$tenantSlug/app/funil': typeof TTenantSlugAppFunilRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
   '/t/$tenantSlug/app': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal': typeof TTenantSlugPortalIndexRoute
+  '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
+  '/t/$tenantSlug/app/funil': typeof TTenantSlugAppFunilIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -210,18 +244,22 @@ export interface FileRoutesById {
   '/painel': typeof PainelRoute
   '/propostas': typeof PropostasRoute
   '/t/$tenantSlug': typeof TTenantSlugRouteRouteWithChildren
+  '/admin/billing': typeof AdminBillingRoute
   '/admin/': typeof AdminIndexRoute
   '/t/$tenantSlug/app': typeof TTenantSlugAppRouteRouteWithChildren
   '/t/$tenantSlug/portal': typeof TTenantSlugPortalRouteRouteWithChildren
+  '/admin/tenants/$tenantId': typeof AdminTenantsTenantIdRoute
+  '/admin/tenants/': typeof AdminTenantsIndexRoute
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
-  '/t/$tenantSlug/app/funil': typeof TTenantSlugAppFunilRoute
   '/t/$tenantSlug/app/painel': typeof TTenantSlugAppPainelRoute
   '/t/$tenantSlug/app/propostas': typeof TTenantSlugAppPropostasRoute
   '/t/$tenantSlug/app/': typeof TTenantSlugAppIndexRoute
   '/t/$tenantSlug/portal/': typeof TTenantSlugPortalIndexRoute
+  '/t/$tenantSlug/app/funil/$pipelineId': typeof TTenantSlugAppFunilPipelineIdRoute
+  '/t/$tenantSlug/app/funil/': typeof TTenantSlugAppFunilIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -237,18 +275,22 @@ export interface FileRouteTypes {
     | '/painel'
     | '/propostas'
     | '/t/$tenantSlug'
+    | '/admin/billing'
     | '/admin/'
     | '/t/$tenantSlug/app'
     | '/t/$tenantSlug/portal'
+    | '/admin/tenants/$tenantId'
+    | '/admin/tenants/'
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chats'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
-    | '/t/$tenantSlug/app/funil'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
     | '/t/$tenantSlug/app/'
     | '/t/$tenantSlug/portal/'
+    | '/t/$tenantSlug/app/funil/$pipelineId'
+    | '/t/$tenantSlug/app/funil/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -261,16 +303,20 @@ export interface FileRouteTypes {
     | '/painel'
     | '/propostas'
     | '/t/$tenantSlug'
+    | '/admin/billing'
     | '/admin'
+    | '/admin/tenants/$tenantId'
+    | '/admin/tenants'
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chats'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
-    | '/t/$tenantSlug/app/funil'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
     | '/t/$tenantSlug/app'
     | '/t/$tenantSlug/portal'
+    | '/t/$tenantSlug/app/funil/$pipelineId'
+    | '/t/$tenantSlug/app/funil'
   id:
     | '__root__'
     | '/'
@@ -284,18 +330,22 @@ export interface FileRouteTypes {
     | '/painel'
     | '/propostas'
     | '/t/$tenantSlug'
+    | '/admin/billing'
     | '/admin/'
     | '/t/$tenantSlug/app'
     | '/t/$tenantSlug/portal'
+    | '/admin/tenants/$tenantId'
+    | '/admin/tenants/'
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chats'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
-    | '/t/$tenantSlug/app/funil'
     | '/t/$tenantSlug/app/painel'
     | '/t/$tenantSlug/app/propostas'
     | '/t/$tenantSlug/app/'
     | '/t/$tenantSlug/portal/'
+    | '/t/$tenantSlug/app/funil/$pipelineId'
+    | '/t/$tenantSlug/app/funil/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -391,12 +441,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/billing': {
+      id: '/admin/billing'
+      path: '/billing'
+      fullPath: '/admin/billing'
+      preLoaderRoute: typeof AdminBillingRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/t/$tenantSlug': {
       id: '/t/$tenantSlug'
       path: '/t/$tenantSlug'
       fullPath: '/t/$tenantSlug'
       preLoaderRoute: typeof TTenantSlugRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/tenants/': {
+      id: '/admin/tenants/'
+      path: '/tenants'
+      fullPath: '/admin/tenants/'
+      preLoaderRoute: typeof AdminTenantsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/tenants/$tenantId': {
+      id: '/admin/tenants/$tenantId'
+      path: '/tenants/$tenantId'
+      fullPath: '/admin/tenants/$tenantId'
+      preLoaderRoute: typeof AdminTenantsTenantIdRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/t/$tenantSlug/portal': {
       id: '/t/$tenantSlug/portal'
@@ -440,13 +511,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TTenantSlugAppPainelRouteImport
       parentRoute: typeof TTenantSlugAppRouteRoute
     }
-    '/t/$tenantSlug/app/funil': {
-      id: '/t/$tenantSlug/app/funil'
-      path: '/funil'
-      fullPath: '/t/$tenantSlug/app/funil'
-      preLoaderRoute: typeof TTenantSlugAppFunilRouteImport
-      parentRoute: typeof TTenantSlugAppRouteRoute
-    }
     '/t/$tenantSlug/app/emails': {
       id: '/t/$tenantSlug/app/emails'
       path: '/emails'
@@ -475,15 +539,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TTenantSlugAppAgendaRouteImport
       parentRoute: typeof TTenantSlugAppRouteRoute
     }
+    '/t/$tenantSlug/app/funil/': {
+      id: '/t/$tenantSlug/app/funil/'
+      path: '/funil'
+      fullPath: '/t/$tenantSlug/app/funil/'
+      preLoaderRoute: typeof TTenantSlugAppFunilIndexRouteImport
+      parentRoute: typeof TTenantSlugAppRouteRoute
+    }
+    '/t/$tenantSlug/app/funil/$pipelineId': {
+      id: '/t/$tenantSlug/app/funil/$pipelineId'
+      path: '/funil/$pipelineId'
+      fullPath: '/t/$tenantSlug/app/funil/$pipelineId'
+      preLoaderRoute: typeof TTenantSlugAppFunilPipelineIdRouteImport
+      parentRoute: typeof TTenantSlugAppRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminBillingRoute: typeof AdminBillingRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminTenantsTenantIdRoute: typeof AdminTenantsTenantIdRoute
+  AdminTenantsIndexRoute: typeof AdminTenantsIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminBillingRoute: AdminBillingRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminTenantsTenantIdRoute: AdminTenantsTenantIdRoute,
+  AdminTenantsIndexRoute: AdminTenantsIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
@@ -495,10 +579,11 @@ interface TTenantSlugAppRouteRouteChildren {
   TTenantSlugAppChatsRoute: typeof TTenantSlugAppChatsRoute
   TTenantSlugAppConfiguracoesRoute: typeof TTenantSlugAppConfiguracoesRoute
   TTenantSlugAppEmailsRoute: typeof TTenantSlugAppEmailsRoute
-  TTenantSlugAppFunilRoute: typeof TTenantSlugAppFunilRoute
   TTenantSlugAppPainelRoute: typeof TTenantSlugAppPainelRoute
   TTenantSlugAppPropostasRoute: typeof TTenantSlugAppPropostasRoute
   TTenantSlugAppIndexRoute: typeof TTenantSlugAppIndexRoute
+  TTenantSlugAppFunilPipelineIdRoute: typeof TTenantSlugAppFunilPipelineIdRoute
+  TTenantSlugAppFunilIndexRoute: typeof TTenantSlugAppFunilIndexRoute
 }
 
 const TTenantSlugAppRouteRouteChildren: TTenantSlugAppRouteRouteChildren = {
@@ -506,10 +591,11 @@ const TTenantSlugAppRouteRouteChildren: TTenantSlugAppRouteRouteChildren = {
   TTenantSlugAppChatsRoute: TTenantSlugAppChatsRoute,
   TTenantSlugAppConfiguracoesRoute: TTenantSlugAppConfiguracoesRoute,
   TTenantSlugAppEmailsRoute: TTenantSlugAppEmailsRoute,
-  TTenantSlugAppFunilRoute: TTenantSlugAppFunilRoute,
   TTenantSlugAppPainelRoute: TTenantSlugAppPainelRoute,
   TTenantSlugAppPropostasRoute: TTenantSlugAppPropostasRoute,
   TTenantSlugAppIndexRoute: TTenantSlugAppIndexRoute,
+  TTenantSlugAppFunilPipelineIdRoute: TTenantSlugAppFunilPipelineIdRoute,
+  TTenantSlugAppFunilIndexRoute: TTenantSlugAppFunilIndexRoute,
 }
 
 const TTenantSlugAppRouteRouteWithChildren =
