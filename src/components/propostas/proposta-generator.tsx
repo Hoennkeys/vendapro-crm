@@ -43,7 +43,7 @@ export type PropostaGeneratorProps = {
   /** Layout compacto para uso em drawer/modal dentro do funil. */
   embedded?: boolean;
   /** Callback após criação bem-sucedida da proposta. */
-  onCreated?: (propostaId: string) => void;
+  onCreated?: (proposta: Pick<Proposta, "id" | "numero">) => void;
 };
 
 export function PropostaGenerator({ leadId, embedded = false, onCreated }: PropostaGeneratorProps) {
@@ -133,7 +133,7 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
       leadId,
     });
     toast.success(`Proposta ${nova.numero} criada!`);
-    onCreated?.(nova.id);
+    onCreated?.({ id: nova.id, numero: nova.numero });
   };
 
   const copiarLink = () => {

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getMockTenant } from "@/lib/tenant/mock-tenants";
-import { Plus, Phone, Mail, MessageSquare, StickyNote, ChevronLeft } from "lucide-react";
+import { Plus, Phone, Mail, MessageSquare, StickyNote, ChevronLeft, FileText } from "lucide-react";
 import { PipelineBoard } from "@/components/pipelines/pipeline-board";
+import { PropostaGenerator } from "@/components/propostas/proposta-generator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { leadsToPipelineItems } from "@/lib/pipelines/adapter";
 import { getPipelineById, SALES_PIPELINE_ID } from "@/lib/pipelines/defaults";
 import type { PipelineItem } from "@/lib/pipelines/types";
@@ -31,6 +33,7 @@ import { etapas } from "@/lib/mock-data";
 import { useTenant } from "@/lib/tenant/tenant-store";
 import type { Etapa, Lead, Prioridade, Usuario } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/funil/$pipelineId")({
   beforeLoad: ({ params }) => {
@@ -297,6 +300,13 @@ function DialogLead({
   usuarios: Usuario[];
   onClose: () => void;
 }) {
+  const { adicionarTimeline } = useCrm();
+  const [tab, setTab] = React.useState<"detalhes" | "proposta">("detalhes");
+
+  React.useEffect(() => {
+    setTab("detalhes");
+  }, [lead?.id]);
+
   if (!lead) return null;
 
   const icone = (t: string) =>
@@ -310,49 +320,89 @@ function DialogLead({
       <StickyNote className="h-3 w-3" />
     );
 
+  const handlePropostaCreated = (proposta: { id: string; numero: string }) => {
+    adicionarTimeline(lead.id, {
+      tipo: "anotacao",
+      em: new Date().toISOString(),
+      texto: `Proposta ${proposta.numero} criada e vinculada a este lead.`,
+    });
+    toast.success("Proposta registrada no lead", {
+      description: `${proposta.numero} adicionada à linha do tempo.`,
+    });
+    setTab("detalhes");
+  };
+
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent
+        className={cn(
+          "max-w-2xl",
+          tab === "proposta" && "max-w-4xl max-h-[90vh] overflow-y-auto",
+        )}
+      >
         <DialogHeader>
           <DialogTitle>{lead.cliente}</DialogTitle>
           <DialogDescription>
             {lead.contato} · {lead.email} · {lead.telefone}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <Info label="Valor">{brl(lead.valor)}</Info>
-          <Info label="Etapa">
-            <Badge className={cn(corEtapa[lead.etapa], "text-white")}>{lead.etapa}</Badge>
-          </Info>
-          <Info label="Prioridade">
-            <Badge variant="secondary" className={corPrioridade[lead.prioridade]}>
-              {lead.prioridade}
-            </Badge>
-          </Info>
-          <Info label="Responsável">{nomeVendedor(usuarios, lead.responsavelId)}</Info>
-          <Info label="Criado em">{brDate(lead.criadoEm)}</Info>
-        </div>
-        <div>
-          <h3 className="mb-2 font-medium">Linha do tempo</h3>
-          {lead.timeline.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhuma interação registrada.</p>
-          )}
-          <ul className="space-y-2">
-            {lead.timeline.map((t, i) => (
-              <li key={i} className="flex items-start gap-2 rounded-md border p-2 text-sm">
-                <span className="mt-0.5 rounded-full bg-primary/10 p-1.5 text-primary">
-                  {icone(t.tipo)}
-                </span>
-                <div className="flex-1">
-                  <p>{t.texto}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {brDate(t.em)} · {t.tipo}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "detalhes" | "proposta")}>
+          <TabsList className="w-full">
+            <TabsTrigger value="detalhes" className="flex-1">
+              Detalhes
+            </TabsTrigger>
+            <TabsTrigger value="proposta" className="flex-1 gap-2">
+              <FileText className="h-4 w-4" />
+              Gerar Proposta
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="detalhes" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <Info label="Valor">{brl(lead.valor)}</Info>
+              <Info label="Etapa">
+                <Badge className={cn(corEtapa[lead.etapa], "text-white")}>{lead.etapa}</Badge>
+              </Info>
+              <Info label="Prioridade">
+                <Badge variant="secondary" className={corPrioridade[lead.prioridade]}>
+                  {lead.prioridade}
+                </Badge>
+              </Info>
+              <Info label="Responsável">{nomeVendedor(usuarios, lead.responsavelId)}</Info>
+              <Info label="Criado em">{brDate(lead.criadoEm)}</Info>
+            </div>
+            <div>
+              <h3 className="mb-2 font-medium">Linha do tempo</h3>
+              {lead.timeline.length === 0 && (
+                <p className="text-sm text-muted-foreground">Nenhuma interação registrada.</p>
+              )}
+              <ul className="space-y-2">
+                {lead.timeline.map((t, i) => (
+                  <li key={i} className="flex items-start gap-2 rounded-md border p-2 text-sm">
+                    <span className="mt-0.5 rounded-full bg-primary/10 p-1.5 text-primary">
+                      {icone(t.tipo)}
+                    </span>
+                    <div className="flex-1">
+                      <p>{t.texto}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {brDate(t.em)} · {t.tipo}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="proposta" className="mt-4">
+            <PropostaGenerator
+              embedded
+              leadId={lead.id}
+              onCreated={handlePropostaCreated}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
