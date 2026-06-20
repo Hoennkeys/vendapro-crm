@@ -37,6 +37,7 @@ import { Route as TTenantSlugAppPainelRouteImport } from './routes/t/$tenantSlug
 import { Route as TTenantSlugAppFaturamentoRouteImport } from './routes/t/$tenantSlug/app/faturamento'
 import { Route as TTenantSlugAppEmailsRouteImport } from './routes/t/$tenantSlug/app/emails'
 import { Route as TTenantSlugAppConfiguracoesRouteImport } from './routes/t/$tenantSlug/app/configuracoes'
+import { Route as TTenantSlugAppComunicacaoRouteImport } from './routes/t/$tenantSlug/app/comunicacao'
 import { Route as TTenantSlugAppChatsRouteImport } from './routes/t/$tenantSlug/app/chats'
 import { Route as TTenantSlugAppChamadosRouteImport } from './routes/t/$tenantSlug/app/chamados'
 import { Route as TTenantSlugAppAgendaRouteImport } from './routes/t/$tenantSlug/app/agenda'
@@ -189,6 +190,12 @@ const TTenantSlugAppConfiguracoesRoute =
     path: '/configuracoes',
     getParentRoute: () => TTenantSlugAppRouteRoute,
   } as any)
+const TTenantSlugAppComunicacaoRoute =
+  TTenantSlugAppComunicacaoRouteImport.update({
+    id: '/comunicacao',
+    path: '/comunicacao',
+    getParentRoute: () => TTenantSlugAppRouteRoute,
+  } as any)
 const TTenantSlugAppChatsRoute = TTenantSlugAppChatsRouteImport.update({
   id: '/chats',
   path: '/chats',
@@ -238,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chamados': typeof TTenantSlugAppChamadosRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
+  '/t/$tenantSlug/app/comunicacao': typeof TTenantSlugAppComunicacaoRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/faturamento': typeof TTenantSlugAppFaturamentoRoute
@@ -270,6 +278,7 @@ export interface FileRoutesByTo {
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chamados': typeof TTenantSlugAppChamadosRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
+  '/t/$tenantSlug/app/comunicacao': typeof TTenantSlugAppComunicacaoRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/faturamento': typeof TTenantSlugAppFaturamentoRoute
@@ -306,6 +315,7 @@ export interface FileRoutesById {
   '/t/$tenantSlug/app/agenda': typeof TTenantSlugAppAgendaRoute
   '/t/$tenantSlug/app/chamados': typeof TTenantSlugAppChamadosRoute
   '/t/$tenantSlug/app/chats': typeof TTenantSlugAppChatsRoute
+  '/t/$tenantSlug/app/comunicacao': typeof TTenantSlugAppComunicacaoRoute
   '/t/$tenantSlug/app/configuracoes': typeof TTenantSlugAppConfiguracoesRoute
   '/t/$tenantSlug/app/emails': typeof TTenantSlugAppEmailsRoute
   '/t/$tenantSlug/app/faturamento': typeof TTenantSlugAppFaturamentoRoute
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chamados'
     | '/t/$tenantSlug/app/chats'
+    | '/t/$tenantSlug/app/comunicacao'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/faturamento'
@@ -375,6 +386,7 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chamados'
     | '/t/$tenantSlug/app/chats'
+    | '/t/$tenantSlug/app/comunicacao'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/faturamento'
@@ -410,6 +422,7 @@ export interface FileRouteTypes {
     | '/t/$tenantSlug/app/agenda'
     | '/t/$tenantSlug/app/chamados'
     | '/t/$tenantSlug/app/chats'
+    | '/t/$tenantSlug/app/comunicacao'
     | '/t/$tenantSlug/app/configuracoes'
     | '/t/$tenantSlug/app/emails'
     | '/t/$tenantSlug/app/faturamento'
@@ -637,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TTenantSlugAppConfiguracoesRouteImport
       parentRoute: typeof TTenantSlugAppRouteRoute
     }
+    '/t/$tenantSlug/app/comunicacao': {
+      id: '/t/$tenantSlug/app/comunicacao'
+      path: '/comunicacao'
+      fullPath: '/t/$tenantSlug/app/comunicacao'
+      preLoaderRoute: typeof TTenantSlugAppComunicacaoRouteImport
+      parentRoute: typeof TTenantSlugAppRouteRoute
+    }
     '/t/$tenantSlug/app/chats': {
       id: '/t/$tenantSlug/app/chats'
       path: '/chats'
@@ -697,6 +717,7 @@ interface TTenantSlugAppRouteRouteChildren {
   TTenantSlugAppAgendaRoute: typeof TTenantSlugAppAgendaRoute
   TTenantSlugAppChamadosRoute: typeof TTenantSlugAppChamadosRoute
   TTenantSlugAppChatsRoute: typeof TTenantSlugAppChatsRoute
+  TTenantSlugAppComunicacaoRoute: typeof TTenantSlugAppComunicacaoRoute
   TTenantSlugAppConfiguracoesRoute: typeof TTenantSlugAppConfiguracoesRoute
   TTenantSlugAppEmailsRoute: typeof TTenantSlugAppEmailsRoute
   TTenantSlugAppFaturamentoRoute: typeof TTenantSlugAppFaturamentoRoute
@@ -711,6 +732,7 @@ const TTenantSlugAppRouteRouteChildren: TTenantSlugAppRouteRouteChildren = {
   TTenantSlugAppAgendaRoute: TTenantSlugAppAgendaRoute,
   TTenantSlugAppChamadosRoute: TTenantSlugAppChamadosRoute,
   TTenantSlugAppChatsRoute: TTenantSlugAppChatsRoute,
+  TTenantSlugAppComunicacaoRoute: TTenantSlugAppComunicacaoRoute,
   TTenantSlugAppConfiguracoesRoute: TTenantSlugAppConfiguracoesRoute,
   TTenantSlugAppEmailsRoute: TTenantSlugAppEmailsRoute,
   TTenantSlugAppFaturamentoRoute: TTenantSlugAppFaturamentoRoute,

@@ -4,8 +4,9 @@ import { DEMO_TENANT_SLUG } from "@/lib/tenant/constants";
 export const Route = createFileRoute("/chats")({
   beforeLoad: () => {
     throw redirect({
-      to: "/t/$tenantSlug/app/chats",
+      to: "/t/$tenantSlug/app/comunicacao",
       params: { tenantSlug: DEMO_TENANT_SLUG },
+      search: { tab: "chats" },
     });
   },
 });
