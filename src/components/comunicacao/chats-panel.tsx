@@ -21,7 +21,12 @@ function iniciais(nome: string) {
     .toUpperCase();
 }
 
-export function ChatsPanel() {
+export type ChatsPanelProps = {
+  initialChatId?: string;
+  draftMessage?: string;
+};
+
+export function ChatsPanel(_props: ChatsPanelProps = {}) {
   const {
     conversas,
     usuarios,
