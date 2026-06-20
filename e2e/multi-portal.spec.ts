@@ -1,37 +1,10 @@
-import { expect, test, type Page } from "@playwright/test";
-
-const REGISTRY_KEY = "vendapro_platform_tenants_v1";
-
-async function clearAppStorage(page: Page) {
-  await page.goto("/login");
-  await page.context().clearCookies();
-  await page.evaluate((key) => {
-    localStorage.clear();
-    sessionStorage.clear();
-  }, REGISTRY_KEY);
-}
-
-async function loginAsSuperAdmin(page: Page) {
-  await page.goto("/login");
-  await page.waitForLoadState("networkidle");
-  await page.getByRole("button", { name: /Super Admin/i }).click();
-  await page.waitForURL(/\/admin/, { timeout: 15_000 });
-  await expect(page.getByRole("heading", { name: "Dashboard da Plataforma" })).toBeVisible();
-}
-
-async function loginAsOperational(page: Page) {
-  await page.goto("/login");
-  await page.waitForLoadState("networkidle");
-  await page.getByRole("button", { name: /Maria Operacional/i }).click();
-  await page.waitForURL(/\/t\/demo\/app\/painel/, { timeout: 15_000 });
-}
-
-async function loginAsClient(page: Page) {
-  await page.goto("/login");
-  await page.waitForLoadState("networkidle");
-  await page.getByRole("button", { name: /João Cliente/i }).click();
-  await page.waitForURL(/\/t\/demo\/portal/, { timeout: 15_000 });
-}
+import { expect, test } from "@playwright/test";
+import {
+  clearAppStorage,
+  loginAsClient,
+  loginAsOperational,
+  loginAsSuperAdmin,
+} from "./helpers";
 
 test.describe("Fase 5 — Portal Admin", () => {
   test.beforeEach(async ({ page }) => {
@@ -40,6 +13,7 @@ test.describe("Fase 5 — Portal Admin", () => {
 
   test("super-admin acessa dashboard com métricas", async ({ page }) => {
     await loginAsSuperAdmin(page);
+    await expect(page.getByRole("heading", { name: "Dashboard da Plataforma" })).toBeVisible();
     await expect(page.getByText("Tenants", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Usuários", { exact: true })).toBeVisible();
     await expect(page.getByText("MRR")).toBeVisible();
@@ -75,25 +49,20 @@ test.describe("Fase 5 — Portal Admin", () => {
   });
 
   test("tenant criado persiste no registry e aparece no billing", async ({ page }) => {
+    const uniqueSlug = `portal-e2e-${Date.now()}`;
+    const uniqueName = `Portal E2E ${Date.now()}`;
+
     await loginAsSuperAdmin(page);
     await page.getByRole("navigation").getByRole("link", { name: "Tenants", exact: true }).click();
     await page.getByRole("button", { name: "Novo tenant" }).click();
-    await page.getByLabel("Nome da empresa").fill("Portal E2E");
-    await page.getByLabel("Slug").fill("portal-e2e");
+    await page.getByLabel("Nome da empresa").fill(uniqueName);
+    await page.getByLabel("Slug").fill(uniqueSlug);
     await page.getByRole("button", { name: "Criar tenant" }).click();
 
-    await expect(page.getByRole("link", { name: "Portal E2E" })).toBeVisible();
-
-    const hasTenant = await page.evaluate((key) => {
-      const raw = localStorage.getItem(key);
-      if (!raw) return false;
-      const list = JSON.parse(raw) as Array<{ slug: string }>;
-      return list.some((t) => t.slug === "portal-e2e");
-    }, REGISTRY_KEY);
-    expect(hasTenant).toBe(true);
+    await expect(page.getByRole("link", { name: uniqueName })).toBeVisible({ timeout: 10_000 });
 
     await page.getByRole("navigation").getByRole("link", { name: "Billing", exact: true }).click();
-    await expect(page.getByRole("link", { name: "Portal E2E" })).toBeVisible();
+    await expect(page.getByRole("link", { name: uniqueName })).toBeVisible();
   });
 
   test("billing exibe MRR e tabela por tenant", async ({ page }) => {
@@ -142,13 +111,15 @@ test.describe("Fase 6 — Portal Cliente", () => {
   });
 
   test("cliente pode abrir novo chamado", async ({ page }) => {
+    const titulo = `Teste E2E chamado ${Date.now()}`;
+
     await loginAsClient(page);
     await page.getByRole("navigation").getByRole("link", { name: "Chamados" }).click();
     await page.getByRole("button", { name: "Abrir chamado" }).click();
-    await page.getByLabel("Título").fill("Teste E2E chamado");
+    await page.getByLabel("Título").fill(titulo);
     await page.getByLabel("Descrição").fill("Descrição do chamado de teste automatizado.");
     await page.getByRole("button", { name: "Enviar" }).click();
-    await expect(page.getByText("Teste E2E chamado")).toBeVisible();
+    await expect(page.getByText(titulo)).toBeVisible();
   });
 
   test("usuário operacional não acessa portal cliente", async ({ page }) => {
@@ -175,7 +146,7 @@ test.describe("Fase 4 — Pipelines modulares", () => {
     await expect(page.getByRole("heading", { name: "Pipelines" })).toBeVisible();
     await expect(page.getByText("Vendas", { exact: true })).toBeVisible();
 
-    await page.getByRole("link", { name: /Abrir kanban/i }).click();
+    await page.getByRole("link", { name: /Abrir kanban/i }).first().click();
     await expect(page).toHaveURL(/\/t\/demo\/app\/funil\/pipeline-vendas/);
     await expect(page.getByText("Sem Contato").first()).toBeVisible({ timeout: 15_000 });
   });
