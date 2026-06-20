@@ -1,34 +1,126 @@
+import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, MessageSquare } from "lucide-react";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ChatsPanel } from "@/components/comunicacao/chats-panel";
 import { EmailsPanel } from "@/components/comunicacao/emails-panel";
+import { buildChamadoGreetingMessage } from "@/lib/comunicacao/chamado-greeting";
+import {
+  buildConversaFromClient,
+  resolveConversaForClient,
+} from "@/lib/comunicacao/conversa-resolver";
+import { findClientById } from "@/lib/clients-registry";
+import { useAuth } from "@/lib/auth/auth-store";
 import { useCrm } from "@/lib/crm-store";
 
 type ComunicacaoTab = "chats" | "emails";
 
-type ComunicacaoSearch = {
+export type ComunicacaoSearch = {
   tab: ComunicacaoTab;
+  chamadoId?: string;
+  clientId?: string;
+  chatId?: string;
 };
+
+type ChatBootstrap = {
+  initialChatId: string;
+  draftMessage: string;
+};
+
+function optionalSearchString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
 
 export const Route = createFileRoute("/t/$tenantSlug/app/comunicacao")({
   validateSearch: (search: Record<string, unknown>): ComunicacaoSearch => ({
     tab: search.tab === "emails" ? "emails" : "chats",
+    chamadoId: optionalSearchString(search.chamadoId),
+    clientId: optionalSearchString(search.clientId),
+    chatId: optionalSearchString(search.chatId),
   }),
   head: () => ({ meta: [{ title: "Comunicação — VendaPro CRM" }] }),
   component: Comunicacao,
 });
 
 function Comunicacao() {
-  const { tab } = Route.useSearch();
+  const { tab, chamadoId, clientId, chatId } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { conversas, emails } = useCrm();
+  const { session } = useAuth();
+  const { conversas, emails, chamados, leads, adicionarConversa } = useCrm();
+  const [chatBootstrap, setChatBootstrap] = React.useState<ChatBootstrap | null>(null);
+  const processedDeepLinkRef = React.useRef<string | null>(null);
 
   const chatsNaoLidas = conversas.reduce((acc, c) => acc + c.naoLidas, 0);
   const emailsNaoLidos = emails.filter(
     (e) => e.pasta === "Caixa de Entrada" && !e.lida,
   ).length;
+
+  React.useEffect(() => {
+    if (tab !== "chats") return;
+    if (!clientId && !chatId) return;
+
+    const deepLinkKey = `${chamadoId ?? ""}|${clientId ?? ""}|${chatId ?? ""}`;
+    if (processedDeepLinkRef.current === deepLinkKey) return;
+
+    const agenteId = session?.user.id;
+    if (!agenteId) {
+      toast.error("Sessão inválida. Faça login novamente.");
+      navigate({ search: { tab: "chats" }, replace: true });
+      return;
+    }
+
+    let conversaId = chatId;
+
+    if (!conversaId && clientId) {
+      const existing = resolveConversaForClient(conversas, leads, clientId);
+      if (existing) {
+        conversaId = existing.id;
+      } else {
+        const draftConversa = buildConversaFromClient(clientId, leads, agenteId);
+        if (!draftConversa) {
+          toast.error("Cliente não encontrado. Não foi possível iniciar o chat.");
+          navigate({ search: { tab: "chats" }, replace: true });
+          return;
+        }
+        const nova = adicionarConversa(draftConversa);
+        conversaId = nova.id;
+        toast.success(`Conversa iniciada para ${draftConversa.contatoNome}`);
+      }
+    }
+
+    if (!conversaId) {
+      navigate({ search: { tab: "chats" }, replace: true });
+      return;
+    }
+
+    const chamado = chamadoId ? chamados.find((item) => item.id === chamadoId) : undefined;
+    const resolvedClientId = clientId ?? chamado?.clientId;
+    const clienteNome = resolvedClientId
+      ? (findClientById(resolvedClientId)?.nome ?? "cliente")
+      : "cliente";
+
+    const draftMessage =
+      chamado && resolvedClientId
+        ? buildChamadoGreetingMessage(clienteNome, chamado.titulo)
+        : "";
+
+    processedDeepLinkRef.current = deepLinkKey;
+    setChatBootstrap({ initialChatId: conversaId, draftMessage });
+    navigate({ search: { tab: "chats" }, replace: true });
+  }, [
+    tab,
+    chamadoId,
+    clientId,
+    chatId,
+    conversas,
+    leads,
+    chamados,
+    session?.user.id,
+    adicionarConversa,
+    navigate,
+  ]);
 
   const onTabChange = (value: string) => {
     navigate({
@@ -73,7 +165,10 @@ function Comunicacao() {
         </TabsList>
 
         <TabsContent value="chats" className="mt-4 min-h-0 flex-1 data-[state=inactive]:hidden">
-          <ChatsPanel />
+          <ChatsPanel
+            initialChatId={chatBootstrap?.initialChatId}
+            draftMessage={chatBootstrap?.draftMessage}
+          />
         </TabsContent>
         <TabsContent value="emails" className="mt-4 min-h-0 flex-1 data-[state=inactive]:hidden">
           <EmailsPanel />

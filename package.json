@@ -15,10 +15,11 @@
     "test:client-portal": "npx tsx src/lib/client-portal/client-portal.test.ts",
     "test:db": "npx tsx src/lib/db/db.test.ts",
     "test:navigation": "npx tsx src/lib/navigation/app-nav.test.ts",
+    "test:comunicacao": "npx tsx src/lib/comunicacao/conversa-resolver.test.ts",
     "db:seed": "npx tsx src/lib/db/seed-cli.ts",
     "test:e2e": "playwright test",
     "test:all": "npm test && npm run test:e2e",
-    "test": "npm run test:pipelines && npm run test:admin && npm run test:client-portal && npm run test:db && npm run test:navigation"
+    "test": "npm run test:pipelines && npm run test:admin && npm run test:client-portal && npm run test:db && npm run test:navigation && npm run test:comunicacao"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

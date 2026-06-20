@@ -57,6 +57,9 @@ type Ctx = State & {
   marcarEmailLido: (id: string) => void;
   enviarMensagem: (conversaId: string, texto: string) => void;
   marcarConversaLida: (conversaId: string) => void;
+  adicionarConversa: (
+    c: Omit<Conversa, "id" | "mensagens" | "naoLidas">,
+  ) => Conversa;
   adicionarProposta: (
     p: Omit<Proposta, "id" | "numero" | "criadaEm" | "status"> & { status?: Proposta["status"] },
   ) => Proposta;
@@ -298,6 +301,16 @@ export function CrmProvider({ children, tenantId }: CrmProviderProps) {
             ),
           };
         }),
+      adicionarConversa: (c) => {
+        const nova: Conversa = {
+          ...c,
+          id: uid("conv"),
+          mensagens: [],
+          naoLidas: 0,
+        };
+        setState((s) => ({ ...s, conversas: [nova, ...s.conversas] }));
+        return nova;
+      },
       adicionarProposta: (p) => {
         let nova!: Proposta;
         setState((s) => {
