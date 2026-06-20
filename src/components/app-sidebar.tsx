@@ -1,16 +1,5 @@
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  KanbanSquare,
-  MessageSquare,
-  Mail,
-  CalendarDays,
-  FileText,
-  Settings,
-  Zap,
-  Headphones,
-  Receipt,
-} from "lucide-react";
+import { Settings, Zap } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,30 +12,10 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { SALES_PIPELINE_ID, PROJECTS_PIPELINE_ID } from "@/lib/pipelines/defaults";
+import { AppSidebarNavMenu } from "@/components/app-sidebar-nav-menu";
+import { AppSidebarPosVendaGroup } from "@/components/app-sidebar-posvenda-group";
+import { COMMERCIAL_SECTION_LABEL, commercialNav } from "@/lib/navigation/app-nav";
 import { useTenant } from "@/lib/tenant/tenant-store";
-
-const navItems = [
-  { title: "Painel", to: "/t/$tenantSlug/app/painel" as const, icon: LayoutDashboard },
-  {
-    title: "Funil de Vendas",
-    to: "/t/$tenantSlug/app/funil/$pipelineId" as const,
-    icon: KanbanSquare,
-    pipelineId: SALES_PIPELINE_ID,
-  },
-  { title: "Chats", to: "/t/$tenantSlug/app/chats" as const, icon: MessageSquare },
-  { title: "E-mails", to: "/t/$tenantSlug/app/emails" as const, icon: Mail },
-  { title: "Agenda", to: "/t/$tenantSlug/app/agenda" as const, icon: CalendarDays },
-  { title: "Propostas", to: "/t/$tenantSlug/app/propostas" as const, icon: FileText },
-  { title: "Chamados", to: "/t/$tenantSlug/app/chamados" as const, icon: Headphones },
-  { title: "Faturamento", to: "/t/$tenantSlug/app/faturamento" as const, icon: Receipt },
-  {
-    title: "Projetos",
-    to: "/t/$tenantSlug/app/funil/$pipelineId" as const,
-    icon: KanbanSquare,
-    pipelineId: PROJECTS_PIPELINE_ID,
-  },
-];
 
 export function AppSidebar() {
   const { tenantSlug } = useParams({ from: "/t/$tenantSlug/app" });
@@ -68,35 +37,16 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navegação</SidebarGroupLabel>
+          <SidebarGroupLabel>{COMMERCIAL_SECTION_LABEL}</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const segment = item.to.split("/").pop() ?? "";
-                const isFunil = "pipelineId" in item;
-                const isActive = isFunil
-                  ? pathname.includes(`/funil/${item.pipelineId}`)
-                  : pathname === `/t/${tenantSlug}/app/${segment}`;
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-                      <Link
-                        to={item.to}
-                        params={
-                          isFunil ? { tenantSlug, pipelineId: item.pipelineId } : { tenantSlug }
-                        }
-                      >
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
+            <AppSidebarNavMenu
+              items={commercialNav}
+              tenantSlug={tenantSlug}
+              pathname={pathname}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
+        <AppSidebarPosVendaGroup tenantSlug={tenantSlug} pathname={pathname} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
