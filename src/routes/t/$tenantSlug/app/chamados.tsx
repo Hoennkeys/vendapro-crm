@@ -17,9 +17,10 @@ import { clientDisplayName } from "@/lib/clients-registry";
 import { useCrm } from "@/lib/crm-store";
 import { brDateTime } from "@/lib/format";
 import { useTenant } from "@/lib/tenant/tenant-store";
+import { NAV_LABELS, CREATOR_TERMS, creatorPageTitle, portalPageTitle } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/chamados")({
-  head: () => ({ meta: [{ title: "Chamados — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: creatorPageTitle(NAV_LABELS.chamados) }] }),
   component: AppChamados,
 });
 
@@ -40,12 +41,13 @@ function AppChamados() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Chamados de Suporte</h1>
           <p className="text-sm text-muted-foreground">
-            Tickets abertos pelos clientes no portal — correlacionados a leads e faturas.
+            Tickets abertos por {CREATOR_TERMS.client.toLowerCase()}s no portal — correlacionados a{" "}
+            {CREATOR_TERMS.lead.toLowerCase()}s e faturas.
           </p>
         </div>
         <Button variant="outline" asChild>
           <Link to="/t/$tenantSlug/portal/chamados" params={{ tenantSlug }}>
-            Ver portal do cliente
+            Ver {CREATOR_TERMS.portal.toLowerCase()}
           </Link>
         </Button>
       </div>
@@ -94,7 +96,7 @@ function AppChamados() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Título</TableHead>
-                  <TableHead>Cliente</TableHead>
+                  <TableHead>{CREATOR_TERMS.client}</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Aberto em</TableHead>
                   <TableHead className="w-[160px]">Ações</TableHead>
@@ -125,7 +127,7 @@ function AppChamados() {
                           }}
                         >
                           <MessageSquare className="h-4 w-4" />
-                          Atender Cliente
+                          Atender {CREATOR_TERMS.client}
                         </Link>
                       </Button>
                     </TableCell>

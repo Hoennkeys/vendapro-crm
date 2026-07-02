@@ -37,6 +37,11 @@ export function CommunicationsProvider({ children }: { children: React.ReactNode
   const queryClient = useQueryClient();
   const tenantId = whiteLabel.tenantId;
 
+  const getCommunicationsRef = React.useRef(crm.getCommunications);
+  const setCommunicationsRef = React.useRef(crm.setCommunications);
+  getCommunicationsRef.current = crm.getCommunications;
+  setCommunicationsRef.current = crm.setCommunications;
+
   const snapshot = React.useMemo(
     () =>
       migrateLegacyCommunications({
@@ -53,23 +58,14 @@ export function CommunicationsProvider({ children }: { children: React.ReactNode
     () =>
       createCommunicationsRepositories({
         tenantId,
-        getSnapshot: () => crm.getCommunications(),
+        getSnapshot: () => getCommunicationsRef.current(),
         setSnapshot: (updater) => {
-          crm.setCommunications(updater);
+          setCommunicationsRef.current(updater);
           void queryClient.invalidateQueries({ queryKey: ["communications", tenantId] });
         },
       }),
-    [crm, queryClient, tenantId],
+    [queryClient, tenantId],
   );
-
-  React.useEffect(() => {
-    commsDevLog("snapshot hydrated", {
-      tenantId,
-      conversations: snapshot.conversations.length,
-      tickets: snapshot.tickets.length,
-      storageProvider: repos.storageProvider,
-    });
-  }, [tenantId, snapshot.conversations.length, snapshot.tickets.length, repos.storageProvider]);
 
   const hub = React.useMemo(
     () => new CommunicationHubService(tenantId, repos),
@@ -79,6 +75,15 @@ export function CommunicationsProvider({ children }: { children: React.ReactNode
   React.useEffect(() => {
     void hub.init();
   }, [hub]);
+
+  React.useEffect(() => {
+    commsDevLog("snapshot hydrated", {
+      tenantId,
+      conversations: snapshot.conversations.length,
+      tickets: snapshot.tickets.length,
+      storageProvider: repos.storageProvider,
+    });
+  }, [tenantId, snapshot.conversations.length, snapshot.tickets.length, repos.storageProvider]);
 
   const role = resolveAuthRole(session);
   const userId = session?.user.id ?? "";
@@ -103,17 +108,20 @@ export function CommunicationsProvider({ children }: { children: React.ReactNode
     void queryClient.invalidateQueries({ queryKey: ["communications", tenantId] });
   }, [queryClient, tenantId]);
 
-  const value: CommunicationsContextValue = {
-    tenantId,
-    hub,
-    snapshot,
-    role,
-    visibleConversations,
-    visibleTickets,
-    filterMessages: filterMessagesForRole,
-    totalUnread: countUnread(visibleConversations),
-    refresh,
-  };
+  const value = React.useMemo<CommunicationsContextValue>(
+    () => ({
+      tenantId,
+      hub,
+      snapshot,
+      role,
+      visibleConversations,
+      visibleTickets,
+      filterMessages: filterMessagesForRole,
+      totalUnread: countUnread(visibleConversations),
+      refresh,
+    }),
+    [tenantId, hub, snapshot, role, visibleConversations, visibleTickets, refresh],
+  );
 
   return (
     <CommunicationsContext.Provider value={value}>{children}</CommunicationsContext.Provider>

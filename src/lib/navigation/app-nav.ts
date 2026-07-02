@@ -20,6 +20,10 @@ import {
   Megaphone,
 } from "lucide-react";
 import { SALES_PIPELINE_ID, PROJECTS_PIPELINE_ID } from "@/lib/pipelines/defaults";
+import {
+  NAV_LABELS,
+  SIDEBAR_SECTIONS,
+} from "@/modules/creator/domain/terminology";
 
 type AppNavRoute =
   | "/t/$tenantSlug/app/creator/"
@@ -52,11 +56,11 @@ export type AppNavPipelineLink = AppNavLink & {
 
 export type AppNavItem = AppNavLink | AppNavPipelineLink;
 
-export const CREATOR_SECTION_LABEL = "Creator OS";
-/** CRM legado — mantido durante migração */
-export const COMMERCIAL_SECTION_LABEL = "CRM Comercial";
-export const COMMUNICATIONS_SECTION_LABEL = "Comunicações";
-export const POS_VENDA_SECTION_LABEL = "Pós-Venda & Operações";
+export const CREATOR_SECTION_LABEL = SIDEBAR_SECTIONS.creator;
+/** CRM legado — rotas e stores preservados; labels Creator OS */
+export const COMMERCIAL_SECTION_LABEL = SIDEBAR_SECTIONS.commercial;
+export const COMMUNICATIONS_SECTION_LABEL = SIDEBAR_SECTIONS.communications;
+export const POS_VENDA_SECTION_LABEL = SIDEBAR_SECTIONS.operations;
 
 export const creatorNav: AppNavItem[] = [
   { title: "Overview", to: "/t/$tenantSlug/app/creator/", icon: Sparkles },
@@ -67,14 +71,14 @@ export const creatorNav: AppNavItem[] = [
 ];
 
 export const commercialNav: AppNavItem[] = [
-  { title: "Painel", to: "/t/$tenantSlug/app/painel", icon: LayoutDashboard },
+  { title: NAV_LABELS.revenueDashboard, to: "/t/$tenantSlug/app/painel", icon: LayoutDashboard },
   {
-    title: "Funil de Vendas",
+    title: NAV_LABELS.campaignPipeline,
     to: "/t/$tenantSlug/app/funil/$pipelineId",
     icon: KanbanSquare,
     pipelineId: SALES_PIPELINE_ID,
   },
-  { title: "Agenda", to: "/t/$tenantSlug/app/agenda", icon: CalendarDays },
+  { title: NAV_LABELS.agenda, to: "/t/$tenantSlug/app/agenda", icon: CalendarDays },
 ];
 
 export const communicationsNav: AppNavItem[] = [
@@ -102,10 +106,10 @@ export const legacyComunicacaoNavItem: AppNavLink = {
 };
 
 export const posVendaNav: AppNavItem[] = [
-  { title: "Chamados", to: "/t/$tenantSlug/app/chamados", icon: Headphones },
-  { title: "Faturamento", to: "/t/$tenantSlug/app/faturamento", icon: Receipt },
+  { title: NAV_LABELS.chamados, to: "/t/$tenantSlug/app/chamados", icon: Headphones },
+  { title: NAV_LABELS.faturamento, to: "/t/$tenantSlug/app/faturamento", icon: Receipt },
   {
-    title: "Projetos",
+    title: NAV_LABELS.projetos,
     to: "/t/$tenantSlug/app/funil/$pipelineId",
     icon: FolderKanban,
     pipelineId: PROJECTS_PIPELINE_ID,

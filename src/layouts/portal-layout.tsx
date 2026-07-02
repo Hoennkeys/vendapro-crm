@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth/auth-store";
 import { userInitials } from "@/lib/auth/session";
 import { usePortalTheme, useTenant } from "@/lib/tenant/tenant-store";
+import { CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 
 type PortalLayoutProps = {
   children: ReactNode;
@@ -35,7 +36,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         )}
         <div className="leading-tight">
           <p className="text-sm font-semibold">{whiteLabel.nome}</p>
-          <p className="text-xs text-muted-foreground">Portal do Cliente</p>
+          <p className="text-xs text-muted-foreground">{CREATOR_TERMS.portal}</p>
         </div>
         <div className="flex-1" />
         <ThemeToggle />

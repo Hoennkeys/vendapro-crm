@@ -17,9 +17,10 @@ import { clientDisplayName } from "@/lib/clients-registry";
 import { useCrm } from "@/lib/crm-store";
 import { brDate, brl } from "@/lib/format";
 import { useTenant } from "@/lib/tenant/tenant-store";
+import { CREATOR_TERMS, creatorPageTitle, NAV_LABELS } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/faturamento")({
-  head: () => ({ meta: [{ title: "Faturamento — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: creatorPageTitle(NAV_LABELS.faturamento) }] }),
   component: AppFaturamento,
 });
 
@@ -42,14 +43,14 @@ function AppFaturamento() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Faturamento de Clientes</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{NAV_LABELS.faturamento}</h1>
           <p className="text-sm text-muted-foreground">
             Faturas emitidas com base em propostas aceitas — visível também no portal.
           </p>
         </div>
         <Button variant="outline" asChild>
           <Link to="/t/$tenantSlug/portal/faturamento" params={{ tenantSlug }}>
-            Ver portal do cliente
+            Ver {CREATOR_TERMS.portal.toLowerCase()}
           </Link>
         </Button>
       </div>
@@ -98,7 +99,7 @@ function AppFaturamento() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Número</TableHead>
-                  <TableHead>Cliente</TableHead>
+                  <TableHead>{CREATOR_TERMS.client}</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Vencimento</TableHead>
                   <TableHead>Status</TableHead>

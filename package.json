@@ -17,7 +17,7 @@
     "test:navigation": "npx tsx src/lib/navigation/app-nav.test.ts",
     "test:comunicacao": "npx tsx src/lib/comunicacao/conversa-resolver.test.ts",
     "test:communications": "npx tsx src/modules/communications/communications.test.ts && npx tsx src/modules/communications/domain/permissions.test.ts",
-    "test:creator": "npx tsx src/modules/creator/creator.test.ts",
+    "test:creator": "npx tsx src/modules/creator/creator.test.ts && npx tsx src/modules/creator/domain/terminology.test.ts",
     "db:seed": "npx tsx src/lib/db/seed-cli.ts",
     "test:e2e": "playwright test",
     "test:all": "npm test && npm run test:e2e",

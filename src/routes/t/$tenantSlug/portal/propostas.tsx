@@ -16,9 +16,10 @@ import { filterPropostasForClient } from "@/lib/client-portal/selectors";
 import { useClientScope } from "@/lib/client-portal/use-client-scope";
 import { useCrm } from "@/lib/crm-store";
 import { brl, brDate } from "@/lib/format";
+import { portalPageTitle } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/portal/propostas")({
-  head: () => ({ meta: [{ title: "Propostas — Portal do Cliente" }] }),
+  head: () => ({ meta: [{ title: portalPageTitle("Propostas") }] }),
   component: PortalPropostas,
 });
 

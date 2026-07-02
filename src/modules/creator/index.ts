@@ -1,5 +1,6 @@
 export * from "./domain/entities";
 export * from "./domain/metrics";
+export * from "./domain/terminology";
 export * from "./store/creator-context";
 export { CreatorDashboard } from "./components/creator-dashboard";
 export { BrandsPage } from "./components/brands-page";

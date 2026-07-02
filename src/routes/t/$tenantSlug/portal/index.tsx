@@ -12,9 +12,10 @@ import { useClientScope } from "@/lib/client-portal/use-client-scope";
 import { useAuth } from "@/lib/auth/auth-store";
 import { useCrm } from "@/lib/crm-store";
 import { useTenant } from "@/lib/tenant/tenant-store";
+import { CREATOR_TERMS, portalPageTitle } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/portal/")({
-  head: () => ({ meta: [{ title: "Portal do Cliente — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: portalPageTitle("Início") }] }),
   component: PortalHome,
 });
 
@@ -67,7 +68,7 @@ function PortalHome() {
     <div className="space-y-6">
       <div className="rounded-xl border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wide text-primary">
-          Portal do Cliente
+          {CREATOR_TERMS.portal}
         </p>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">
           Bem-vindo, {session?.user.nome}

@@ -12,6 +12,7 @@ import {
   isPosVendaRouteActive,
   posVendaNav,
 } from "./app-nav";
+import { NAV_LABELS, SIDEBAR_SECTIONS } from "@/modules/creator/domain/terminology";
 import { PROJECTS_PIPELINE_ID, SALES_PIPELINE_ID } from "@/lib/pipelines/defaults";
 
 function test(name: string, fn: () => void) {
@@ -34,7 +35,7 @@ test("creatorNav contém Overview, Marcas e Campanhas", () => {
   assert.ok(titles.includes("Marcas"));
   assert.ok(titles.includes("Campanhas"));
   assert.equal(CREATOR_SECTION_LABEL, "Creator OS");
-  assert.equal(COMMERCIAL_SECTION_LABEL, "CRM Comercial");
+  assert.equal(COMMERCIAL_SECTION_LABEL, SIDEBAR_SECTIONS.commercial);
 });
 
 test("isCreatorNavActive cobre rotas creator", () => {
@@ -57,17 +58,17 @@ test("communicationsNav contém Inbox, Tickets e Integrações", () => {
   assert.equal(titles.length, 6);
 });
 
-test("posVendaNav agrupa Chamados, Faturamento e Projetos", () => {
+test("posVendaNav agrupa Suporte, Faturamento e Projetos", () => {
   const titles = posVendaNav.map((item) => item.title);
-  assert.deepEqual(titles, ["Chamados", "Faturamento", "Projetos"]);
-  const projetos = posVendaNav.find((item) => item.title === "Projetos");
+  assert.deepEqual(titles, [NAV_LABELS.chamados, NAV_LABELS.faturamento, NAV_LABELS.projetos]);
+  const projetos = posVendaNav.find((item) => item.title === NAV_LABELS.projetos);
   assert.ok(projetos && isPipelineNavItem(projetos));
   assert.equal(projetos.pipelineId, PROJECTS_PIPELINE_ID);
 });
 
 test("isNavItemActive detecta funil de vendas e projetos separadamente", () => {
-  const vendas = commercialNav.find((item) => item.title === "Funil de Vendas")!;
-  const projetos = posVendaNav.find((item) => item.title === "Projetos")!;
+  const vendas = commercialNav.find((item) => item.title === NAV_LABELS.campaignPipeline)!;
+  const projetos = posVendaNav.find((item) => item.title === NAV_LABELS.projetos)!;
 
   assert.ok(
     isNavItemActive(`/t/${TENANT}/app/funil/${SALES_PIPELINE_ID}`, TENANT, vendas),
