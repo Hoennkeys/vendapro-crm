@@ -1,14 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import type { ParticipantRole } from "../../domain/entities";
-
-const LABELS: Record<ParticipantRole, string> = {
-  admin: "Admin",
-  employee: "Funcionário",
-  client: "Cliente",
-  system: "Sistema",
-  external: "Externo",
-};
+import { labelCommunicationsRole } from "@/modules/creator/domain/terminology";
 
 export function RoleBadge({ role }: { role: ParticipantRole }) {
-  return <Badge variant="secondary">{LABELS[role] ?? role}</Badge>;
+  return <Badge variant="secondary">{labelCommunicationsRole(role)}</Badge>;
 }

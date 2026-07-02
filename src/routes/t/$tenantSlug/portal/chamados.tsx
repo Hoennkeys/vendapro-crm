@@ -29,9 +29,10 @@ import { filterChamadosForClient } from "@/lib/client-portal/selectors";
 import { useClientScope } from "@/lib/client-portal/use-client-scope";
 import { useCrm } from "@/lib/crm-store";
 import { brDateTime } from "@/lib/format";
+import { portalPageTitle } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/portal/chamados")({
-  head: () => ({ meta: [{ title: "Chamados — Portal do Cliente" }] }),
+  head: () => ({ meta: [{ title: portalPageTitle("Chamados") }] }),
   component: PortalChamados,
 });
 

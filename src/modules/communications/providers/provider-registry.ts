@@ -49,6 +49,12 @@ export class ProviderRegistry {
       if (!config.enabled) continue;
       const provider = this.get(config.type);
       const status = await provider.connect(config);
+      if (
+        config.status === status.status &&
+        config.errorMessage === status.message
+      ) {
+        continue;
+      }
       this.repos.providerRepo.update(config.id, {
         status: status.status,
         lastSyncAt: status.lastSyncAt,

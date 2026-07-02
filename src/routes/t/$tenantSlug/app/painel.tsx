@@ -30,9 +30,10 @@ import { useCrm, nomeVendedor } from "@/lib/crm-store";
 import { brl } from "@/lib/format";
 import { etapas } from "@/lib/mock-data";
 import { pageTitle } from "@/lib/product-branding";
+import { CREATOR_TERMS, NAV_LABELS } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/painel")({
-  head: () => ({ meta: [{ title: pageTitle("Painel CRM") }] }),
+  head: () => ({ meta: [{ title: pageTitle(NAV_LABELS.revenueDashboard) }] }),
   component: Painel,
 });
 
@@ -121,11 +122,13 @@ function Painel() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Painel</h1>
-          <p className="text-sm text-muted-foreground">Visão geral das suas vendas e equipe.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{NAV_LABELS.revenueDashboard}</h1>
+          <p className="text-sm text-muted-foreground">
+            Visão geral de {CREATOR_TERMS.sale.toLowerCase()} e equipe.
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Vendedor:</span>
+          <span className="text-sm text-muted-foreground">{CREATOR_TERMS.employee}:</span>
           <Select value={filtroVendedor} onValueChange={setFiltroVendedor}>
             <SelectTrigger className="w-[200px]">
               <SelectValue />
@@ -145,15 +148,15 @@ function Painel() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Kpi
           icon={<Wallet className="h-4 w-4" />}
-          label="Faturamento do Mês"
+          label="Campaign Revenue — mês"
           value={brl(faturamento)}
-          hint={ganhos ? `${ganhos} negócio(s) ganho(s)` : "Nenhuma venda fechada ainda"}
+          hint={ganhos ? `${ganhos} campanha(s) fechada(s)` : "Nenhuma receita registrada ainda"}
         />
         <Kpi
           icon={<TrendingUp className="h-4 w-4" />}
-          label="Valor do Pipeline"
+          label={`Valor do ${CREATOR_TERMS.funnel}`}
           value={brl(pipeline)}
-          hint={`${leadsFiltrados.length} oportunidades`}
+          hint={`${leadsFiltrados.length} ${CREATOR_TERMS.lead.toLowerCase()}s`}
         />
         <Kpi
           icon={<Percent className="h-4 w-4" />}
@@ -188,7 +191,7 @@ function Painel() {
           <CardContent className="h-[280px]">
             {faturamentoMensal.every((m) => m.faturamento === 0) ? (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Sem faturamento registrado. Feche negócios no funil para ver o gráfico.
+                Sem faturamento registrado. Feche deals no {CREATOR_TERMS.funnel.toLowerCase()} para ver o gráfico.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -224,12 +227,12 @@ function Painel() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Leads por Etapa</CardTitle>
+            <CardTitle>{CREATOR_TERMS.lead}s por Etapa</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             {leadsFiltrados.length === 0 ? (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Nenhum lead cadastrado.
+                Nenhuma {CREATOR_TERMS.lead.toLowerCase()} cadastrada.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -264,12 +267,12 @@ function Painel() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Vendas por Vendedor</CardTitle>
+            <CardTitle>{CREATOR_TERMS.sale} por {CREATOR_TERMS.employee}</CardTitle>
           </CardHeader>
           <CardContent className="h-[260px]">
             {porVendedor.every((v) => v.vendas === 0) ? (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Nenhuma venda fechada por vendedor.
+                Nenhuma receita fechada por {CREATOR_TERMS.employee.toLowerCase()}.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -307,7 +310,7 @@ function Painel() {
           <CardContent className="space-y-3">
             {atividades.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                Sem atividades. Interações nos leads aparecem aqui automaticamente.
+                Sem atividades. Interações nas {CREATOR_TERMS.lead.toLowerCase()}s aparecem aqui.
               </p>
             )}
             {atividades.map((a) => (

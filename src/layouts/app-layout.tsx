@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <SidebarInset>
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur">
           <SidebarTrigger />
-          <div className="flex-1" />
+          <AppBreadcrumbs className="hidden min-w-0 flex-1 sm:flex" />
+          <div className="flex-1 sm:hidden" />
           <ThemeToggle />
           <span className="hidden text-sm text-muted-foreground md:inline">
             {session?.user.nome}

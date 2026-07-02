@@ -10,6 +10,7 @@ import { commsDevLog } from "../lib/dev-diagnostics";
 export class CommunicationHubService {
   registry: ProviderRegistry;
   private realtime = createRealtimeService();
+  private initPromise: Promise<void> | null = null;
 
   constructor(
     private tenantId: string,
@@ -19,6 +20,12 @@ export class CommunicationHubService {
   }
 
   async init() {
+    if (this.initPromise) return this.initPromise;
+    this.initPromise = this.runInit();
+    return this.initPromise;
+  }
+
+  private async runInit() {
     await this.realtime.connect(this.tenantId);
     await this.registry.connectAll();
     commsDevLog("hub initialized", { tenantId: this.tenantId });

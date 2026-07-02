@@ -15,8 +15,8 @@ test.describe("Integração Chamados → Inbox", () => {
     await expect(page.getByRole("heading", { name: /Chamados de Suporte/i })).toBeVisible();
 
     await page
-      .getByRole("link", { name: /Atender Cliente/i })
-      .filter({ hasText: /Atender Cliente/i })
+      .getByRole("link", { name: /Atender Brand/i })
+      .filter({ hasText: /Atender Brand/i })
       .first()
       .click();
 
@@ -43,7 +43,7 @@ test.describe("Integração Chamados → Inbox", () => {
     await page.reload();
     await expect(page.getByRole("heading", { name: /Chamados de Suporte/i })).toBeVisible();
 
-    await page.getByRole("link", { name: /Atender Cliente/i }).first().click();
+    await page.getByRole("link", { name: /Atender Brand/i }).first().click();
 
     await expect(page).toHaveURL(/\/t\/demo\/app\/communications\/inbox/);
 

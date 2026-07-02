@@ -10,9 +10,10 @@ import { useClientScope } from "@/lib/client-portal/use-client-scope";
 import { useCrm } from "@/lib/crm-store";
 import { getPipelineById, PROJECTS_PIPELINE_ID } from "@/lib/pipelines/defaults";
 import { brDate } from "@/lib/format";
+import { portalPageTitle } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/portal/projetos")({
-  head: () => ({ meta: [{ title: "Projetos — Portal do Cliente" }] }),
+  head: () => ({ meta: [{ title: portalPageTitle("Projetos") }] }),
   component: PortalProjetos,
 });
 

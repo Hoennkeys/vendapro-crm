@@ -33,6 +33,12 @@ import { etapas } from "@/lib/mock-data";
 import { useTenant } from "@/lib/tenant/tenant-store";
 import type { Etapa, Lead, Prioridade, Usuario } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import {
+  CREATOR_TERMS,
+  creatorPageTitle,
+  labelPipelineDescription,
+  labelPipelineDisplay,
+} from "@/modules/creator/domain/terminology";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/funil/$pipelineId")({
@@ -47,7 +53,13 @@ export const Route = createFileRoute("/t/$tenantSlug/app/funil/$pipelineId")({
     const tenant = getMockTenant(params.tenantSlug);
     const pipeline = tenant ? getPipelineById(tenant.id, params.pipelineId) : undefined;
     return {
-      meta: [{ title: `${pipeline?.nome ?? "Pipeline"} — VendaPro CRM` }],
+      meta: [
+        {
+          title: creatorPageTitle(
+            labelPipelineDisplay(params.pipelineId, pipeline?.nome ?? "Pipeline"),
+          ),
+        },
+      ],
     };
   },
   component: PipelinePage,
@@ -95,14 +107,16 @@ function PipelinePage() {
               Pipelines
             </Link>
           </Button>
-          <h1 className="text-2xl font-semibold tracking-tight">{pipeline.nome}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {labelPipelineDisplay(pipeline.id, pipeline.nome)}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            {pipeline.descricao ?? "Arraste os cards entre as etapas."}
+            {labelPipelineDescription(pipeline.id, pipeline.descricao ?? "Arraste os cards entre as etapas.")}
           </p>
         </div>
         {isSales && (
           <Button onClick={() => setNovoOpen(true)}>
-            <Plus className="h-4 w-4" /> Novo Lead
+            <Plus className="h-4 w-4" /> Nova {CREATOR_TERMS.lead}
           </Button>
         )}
       </div>
@@ -183,12 +197,14 @@ function NovoLeadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo Lead</DialogTitle>
-          <DialogDescription>Adicione uma nova oportunidade ao funil.</DialogDescription>
+          <DialogTitle>Nova {CREATOR_TERMS.lead}</DialogTitle>
+          <DialogDescription>
+            Adicione uma nova oportunidade ao {CREATOR_TERMS.funnel.toLowerCase()}.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <Label>Cliente / Empresa</Label>
+            <Label>{CREATOR_TERMS.client} / Empresa</Label>
             <Input
               value={form.cliente}
               onChange={(e) => setForm({ ...form, cliente: e.target.value })}
@@ -260,7 +276,7 @@ function NovoLeadDialog({
             </Select>
           </div>
           <div>
-            <Label>Responsável</Label>
+            <Label>{CREATOR_TERMS.employee}</Label>
             <Select
               value={form.responsavelId}
               onValueChange={(v) => setForm({ ...form, responsavelId: v })}
@@ -324,9 +340,9 @@ function DialogLead({
     adicionarTimeline(lead.id, {
       tipo: "anotacao",
       em: new Date().toISOString(),
-      texto: `Proposta ${proposta.numero} criada e vinculada a este lead.`,
+      texto: `Proposta ${proposta.numero} criada e vinculada a esta ${CREATOR_TERMS.lead.toLowerCase()}.`,
     });
-    toast.success("Proposta registrada no lead", {
+    toast.success(`Proposta registrada na ${CREATOR_TERMS.lead.toLowerCase()}`, {
       description: `${proposta.numero} adicionada à linha do tempo.`,
     });
     setTab("detalhes");
@@ -369,7 +385,7 @@ function DialogLead({
                   {lead.prioridade}
                 </Badge>
               </Info>
-              <Info label="Responsável">{nomeVendedor(usuarios, lead.responsavelId)}</Info>
+              <Info label={CREATOR_TERMS.employee}>{nomeVendedor(usuarios, lead.responsavelId)}</Info>
               <Info label="Criado em">{brDate(lead.criadoEm)}</Info>
             </div>
             <div>

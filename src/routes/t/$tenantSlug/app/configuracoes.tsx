@@ -34,10 +34,11 @@ import {
 } from "@/components/ui/dialog";
 import { useCrm } from "@/lib/crm-store";
 import type { Papel } from "@/lib/types";
+import { creatorPageTitle, labelCrmPapel, CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 import { WhiteLabelSettings } from "@/components/tenant/white-label-settings";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/configuracoes")({
-  head: () => ({ meta: [{ title: "Configurações — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: creatorPageTitle("Configurações") }] }),
   component: Configuracoes,
 });
 
@@ -147,7 +148,9 @@ function Configuracoes() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Equipe</CardTitle>
-                <CardDescription>Defina quem é Administrador ou Vendedor.</CardDescription>
+                <CardDescription>
+                  Defina quem é {CREATOR_TERMS.admin} ou {CREATOR_TERMS.employee}.
+                </CardDescription>
               </div>
               <Button onClick={() => setNovo(true)}>
                 <Plus className="h-4 w-4" /> Novo Usuário
@@ -171,7 +174,7 @@ function Configuracoes() {
                       <TableCell>{u.email}</TableCell>
                       <TableCell>
                         <Badge variant={u.papel === "Administrador" ? "default" : "secondary"}>
-                          {u.papel}
+                          {labelCrmPapel(u.papel)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -446,8 +449,8 @@ function Configuracoes() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Administrador">Administrador</SelectItem>
-                  <SelectItem value="Vendedor">Vendedor</SelectItem>
+                  <SelectItem value="Administrador">{labelCrmPapel("Administrador")}</SelectItem>
+                  <SelectItem value="Vendedor">{labelCrmPapel("Vendedor")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
