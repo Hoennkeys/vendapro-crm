@@ -1,4 +1,6 @@
 import type { PipelineItem } from "@/lib/pipelines/types";
+import type { CommunicationsSnapshot } from "@/modules/communications/domain/entities";
+import type { CreatorSnapshot } from "@/modules/creator/domain/entities";
 import type {
   Chamado,
   Conversa,
@@ -34,6 +36,8 @@ export type TenantCrmSnapshot = {
   pipelineItems: PipelineItem[];
   usuarios: Usuario[];
   configuracoes?: CrmConfiguracoes;
+  communications?: CommunicationsSnapshot;
+  creator?: CreatorSnapshot;
 };
 
 export const EMPTY_CRM_SNAPSHOT: TenantCrmSnapshot = {

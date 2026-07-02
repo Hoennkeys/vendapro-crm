@@ -29,9 +29,10 @@ import { Badge } from "@/components/ui/badge";
 import { useCrm, nomeVendedor } from "@/lib/crm-store";
 import { brl } from "@/lib/format";
 import { etapas } from "@/lib/mock-data";
+import { pageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/painel")({
-  head: () => ({ meta: [{ title: "Painel — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: pageTitle("Painel CRM") }] }),
   component: Painel,
 });
 

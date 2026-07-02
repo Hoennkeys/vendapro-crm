@@ -9,6 +9,21 @@ import { useAuth } from "@/lib/auth/auth-store";
 import { isClientServerApiEnabled } from "@/lib/client/server-api";
 import { useTenant } from "@/lib/tenant/tenant-store";
 
+import { migrateLegacyCommunications } from "@/modules/communications/domain/legacy-adapter";
+import { applyChamadoStatusInSnapshot } from "@/modules/communications/domain/chamado-ticket-sync";
+import type { CommunicationsSnapshot } from "@/modules/communications/domain/entities";
+import { commsDevLog } from "@/modules/communications/lib/dev-diagnostics";
+import {
+  EMPTY_CREATOR_SNAPSHOT,
+  type Brand,
+  type Agency,
+  type Sponsor,
+  type Campaign,
+  type CampaignStatus,
+  type CreatorSnapshot,
+} from "@/modules/creator/domain/entities";
+import { buildMockCreatorForTenant } from "@/modules/creator/data/mock-creator-data";
+
 import { buildMockSnapshotForTenant } from "./mock-data";
 import type { CrmConfiguracoes } from "./db/types";
 import { stageIdToEtapa } from "./pipelines/adapter";
@@ -39,6 +54,8 @@ type State = {
   pipelineItems: PipelineItem[];
   usuarios: Usuario[];
   configuracoes?: CrmConfiguracoes;
+  communications?: CommunicationsSnapshot;
+  creator?: CreatorSnapshot;
   filtroVendedor: string; // "todos" | userId
 };
 
@@ -69,9 +86,25 @@ type Ctx = State & {
       status?: Chamado["status"];
     },
   ) => Chamado;
+  atualizarStatusChamado: (
+    id: string,
+    status: Chamado["status"],
+    opts?: { syncTicket?: boolean },
+  ) => void;
   adicionarUsuario: (u: Omit<Usuario, "id">) => void;
   alternarUsuarioAtivo: (id: string) => void;
   atualizarConfiguracoes: (patch: Partial<CrmConfiguracoes>) => void;
+  setCommunications: (
+    updater: (snapshot: CommunicationsSnapshot) => CommunicationsSnapshot,
+  ) => void;
+  getCommunications: () => CommunicationsSnapshot;
+  getCreator: () => CreatorSnapshot;
+  setCreator: (updater: (snapshot: CreatorSnapshot) => CreatorSnapshot) => void;
+  adicionarBrand: (b: Omit<Brand, "id" | "tenantId" | "createdAt" | "updatedAt">) => Brand;
+  adicionarAgency: (a: Omit<Agency, "id" | "tenantId" | "createdAt" | "updatedAt">) => Agency;
+  adicionarSponsor: (s: Omit<Sponsor, "id" | "tenantId" | "createdAt" | "updatedAt">) => Sponsor;
+  adicionarCampaign: (c: Omit<Campaign, "id" | "tenantId" | "createdAt" | "updatedAt">) => Campaign;
+  atualizarCampaignStatus: (id: string, status: CampaignStatus) => void;
 };
 
 const CrmContext = React.createContext<Ctx | null>(null);
@@ -81,8 +114,25 @@ function storageKey(tenantId: string) {
   return `vendapro_crm_state_v3_${tenantId}`;
 }
 
+function hydrateCommunications(tenantId: string, state: Partial<State>): CommunicationsSnapshot {
+  return migrateLegacyCommunications({
+    tenantId,
+    conversas: state.conversas ?? [],
+    emails: state.emails ?? [],
+    chamados: state.chamados ?? [],
+    existing: state.communications,
+  });
+}
+
+function hydrateCreator(tenantId: string, state: Partial<State>): CreatorSnapshot {
+  return state.creator ?? buildMockCreatorForTenant(tenantId);
+}
+
 function getInitialStateForTenant(tenantId: string): State {
-  return { ...buildMockSnapshotForTenant(tenantId), filtroVendedor: "todos" };
+  const base = buildMockSnapshotForTenant(tenantId);
+  const communications = hydrateCommunications(tenantId, base);
+  const creator = hydrateCreator(tenantId, base);
+  return { ...base, communications, creator, filtroVendedor: "todos" };
 }
 
 function uid(prefix = "id") {
@@ -116,9 +166,11 @@ export function CrmProvider({ children, tenantId }: CrmProviderProps) {
         try {
           const remote = await getCrmStateServerFn({ data: { tenantId } });
           if (!cancelled) {
+            const merged = { ...tenantInitial, ...remote };
             setState((prev) => ({
-              ...tenantInitial,
-              ...remote,
+              ...merged,
+              communications: hydrateCommunications(tenantId, merged),
+              creator: hydrateCreator(tenantId, merged),
               filtroVendedor: prev.filtroVendedor,
             }));
           }
@@ -137,9 +189,11 @@ export function CrmProvider({ children, tenantId }: CrmProviderProps) {
         if (raw) {
           const parsed = JSON.parse(raw) as Partial<State>;
           if (!cancelled) {
+            const merged = { ...tenantInitial, ...parsed };
             setState({
-              ...tenantInitial,
-              ...parsed,
+              ...merged,
+              communications: hydrateCommunications(tenantId, merged),
+              creator: hydrateCreator(tenantId, merged),
               filtroVendedor: parsed.filtroVendedor ?? "todos",
             });
           }
@@ -371,6 +425,22 @@ export function CrmProvider({ children, tenantId }: CrmProviderProps) {
         setState((s) => ({ ...s, chamados: [optimistic, ...s.chamados] }));
         return optimistic;
       },
+      atualizarStatusChamado: (id, status, opts) =>
+        setState((s) => {
+          const agora = new Date().toISOString();
+          const chamados = s.chamados.map((c) =>
+            c.id === id ? { ...c, status, atualizadoEm: agora } : c,
+          );
+          const syncTicket = opts?.syncTicket !== false;
+          const communications = syncTicket
+            ? applyChamadoStatusInSnapshot(
+                s.communications ?? hydrateCommunications(tenantId, s),
+                chamados,
+              )
+            : s.communications;
+          commsDevLog("chamado status updated", { chamadoId: id, status, syncTicket });
+          return { ...s, chamados, communications };
+        }),
       adicionarUsuario: (u) =>
         setState((s) => ({ ...s, usuarios: [...s.usuarios, { ...u, id: uid("u") }] })),
       alternarUsuarioAtivo: (id) =>
@@ -383,6 +453,109 @@ export function CrmProvider({ children, tenantId }: CrmProviderProps) {
           ...s,
           configuracoes: s.configuracoes ? { ...s.configuracoes, ...patch } : undefined,
         })),
+      setCommunications: (updater) =>
+        setState((s) => {
+          const current = s.communications ?? hydrateCommunications(tenantId, s);
+          return { ...s, communications: updater(current) };
+        }),
+      getCommunications: () => {
+        const current = state.communications;
+        if (current?.migratedV1) return current;
+        return hydrateCommunications(tenantId, state);
+      },
+      getCreator: () => state.creator ?? hydrateCreator(tenantId, state),
+      setCreator: (updater) =>
+        setState((s) => {
+          const current = s.creator ?? hydrateCreator(tenantId, s);
+          return { ...s, creator: updater(current) };
+        }),
+      adicionarBrand: (b) => {
+        const agora = new Date().toISOString();
+        const nova: Brand = {
+          ...b,
+          id: uid("brand"),
+          tenantId,
+          createdAt: agora,
+          updatedAt: agora,
+        };
+        setState((s) => ({
+          ...s,
+          creator: {
+            ...(s.creator ?? EMPTY_CREATOR_SNAPSHOT),
+            brands: [nova, ...(s.creator?.brands ?? [])],
+          },
+        }));
+        return nova;
+      },
+      adicionarAgency: (a) => {
+        const agora = new Date().toISOString();
+        const nova: Agency = {
+          ...a,
+          id: uid("agency"),
+          tenantId,
+          createdAt: agora,
+          updatedAt: agora,
+        };
+        setState((s) => ({
+          ...s,
+          creator: {
+            ...(s.creator ?? EMPTY_CREATOR_SNAPSHOT),
+            agencies: [nova, ...(s.creator?.agencies ?? [])],
+          },
+        }));
+        return nova;
+      },
+      adicionarSponsor: (sp) => {
+        const agora = new Date().toISOString();
+        const novo: Sponsor = {
+          ...sp,
+          id: uid("sponsor"),
+          tenantId,
+          createdAt: agora,
+          updatedAt: agora,
+        };
+        setState((s) => ({
+          ...s,
+          creator: {
+            ...(s.creator ?? EMPTY_CREATOR_SNAPSHOT),
+            sponsors: [novo, ...(s.creator?.sponsors ?? [])],
+          },
+        }));
+        return novo;
+      },
+      adicionarCampaign: (c) => {
+        const agora = new Date().toISOString();
+        const nova: Campaign = {
+          ...c,
+          id: uid("campaign"),
+          tenantId,
+          createdAt: agora,
+          updatedAt: agora,
+        };
+        setState((s) => ({
+          ...s,
+          creator: {
+            ...(s.creator ?? EMPTY_CREATOR_SNAPSHOT),
+            campaigns: [nova, ...(s.creator?.campaigns ?? [])],
+          },
+        }));
+        return nova;
+      },
+      atualizarCampaignStatus: (id, status) =>
+        setState((s) => {
+          const creator = s.creator ?? hydrateCreator(tenantId, s);
+          return {
+            ...s,
+            creator: {
+              ...creator,
+              campaigns: creator.campaigns.map((c) =>
+                c.id === id
+                  ? { ...c, status, updatedAt: new Date().toISOString() }
+                  : c,
+              ),
+            },
+          };
+        }),
     }),
     [state, tenantId, useServerApi, isClientUser],
   );

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Plus, Smartphone, Mail, Shield, Palette } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -76,6 +76,7 @@ function QrCodeSimulado() {
 }
 
 function Configuracoes() {
+  const { tenantSlug } = Route.useParams();
   const { usuarios, configuracoes, adicionarUsuario, alternarUsuarioAtivo, atualizarConfiguracoes } =
     useCrm();
   const [novo, setNovo] = React.useState(false);
@@ -195,6 +196,17 @@ function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="whatsapp">
+          <p className="mb-3 text-sm text-muted-foreground">
+            Integrações omnichannel disponíveis em{" "}
+            <Link
+              to="/t/$tenantSlug/app/communications/integrations"
+              params={{ tenantSlug }}
+              className="text-primary underline"
+            >
+              Comunicações → Integrações
+            </Link>
+            .
+          </p>
           <Card>
             <CardHeader>
               <CardTitle>Conectar WhatsApp Business</CardTitle>
@@ -239,6 +251,17 @@ function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="email">
+          <p className="mb-3 text-sm text-muted-foreground">
+            SMTP também configurável em{" "}
+            <Link
+              to="/t/$tenantSlug/app/communications/integrations"
+              params={{ tenantSlug }}
+              className="text-primary underline"
+            >
+              Comunicações → Integrações
+            </Link>
+            .
+          </p>
           <Card>
             <CardHeader>
               <CardTitle>Configuração de E-mail (SMTP / IMAP)</CardTitle>

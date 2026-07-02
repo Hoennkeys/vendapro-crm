@@ -117,10 +117,9 @@ function AppChamados() {
                     <TableCell>
                       <Button variant="outline" size="sm" asChild>
                         <Link
-                          to="/t/$tenantSlug/app/comunicacao"
+                          to="/t/$tenantSlug/app/communications/inbox"
                           params={{ tenantSlug }}
                           search={{
-                            tab: "chats",
                             chamadoId: c.id,
                             clientId: c.clientId,
                           }}

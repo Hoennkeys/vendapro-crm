@@ -11,6 +11,7 @@ import type {
 } from "./types";
 import type { PipelineItem } from "./pipelines/types";
 import type { TenantCrmSnapshot, CrmConfiguracoes } from "./db/types";
+import { buildMockCreatorForTenant } from "@/modules/creator/data/mock-creator-data";
 import { PROJECTS_PIPELINE_ID } from "./pipelines/defaults";
 
 export const DEMO_TENANT_ID = "tenant-demo";
@@ -994,6 +995,7 @@ export function buildMockSnapshotForTenant(tenantId: string): TenantCrmSnapshot 
       pipelineItems: filterPipelineItemsForTenant(tenantId),
       usuarios: usuariosDemo,
       configuracoes: configuracoesDemo,
+      creator: buildMockCreatorForTenant(tenantId),
     };
   }
 
@@ -1009,6 +1011,7 @@ export function buildMockSnapshotForTenant(tenantId: string): TenantCrmSnapshot 
       pipelineItems: filterPipelineItemsForTenant(tenantId),
       usuarios: usuariosAcme,
       configuracoes: configuracoesAcme,
+      creator: buildMockCreatorForTenant(tenantId),
     };
   }
 
@@ -1022,5 +1025,6 @@ export function buildMockSnapshotForTenant(tenantId: string): TenantCrmSnapshot 
     faturas: [],
     pipelineItems: [],
     usuarios: [],
+    creator: buildMockCreatorForTenant(tenantId),
   };
 }

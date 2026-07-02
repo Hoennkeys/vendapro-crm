@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import {
   commercialNav,
+  communicationsNav,
+  creatorNav,
+  CREATOR_SECTION_LABEL,
+  COMMERCIAL_SECTION_LABEL,
+  isCreatorNavActive,
+  isCommunicationsNavActive,
   isNavItemActive,
   isPipelineNavItem,
   isPosVendaRouteActive,
@@ -22,13 +28,33 @@ const TENANT = "demo";
 
 console.log("app-nav — testes unitários\n");
 
-test("commercialNav contém Comunicação e não inclui Propostas", () => {
+test("creatorNav contém Overview, Marcas e Campanhas", () => {
+  const titles = creatorNav.map((item) => item.title);
+  assert.ok(titles.includes("Overview"));
+  assert.ok(titles.includes("Marcas"));
+  assert.ok(titles.includes("Campanhas"));
+  assert.equal(CREATOR_SECTION_LABEL, "Creator OS");
+  assert.equal(COMMERCIAL_SECTION_LABEL, "CRM Comercial");
+});
+
+test("isCreatorNavActive cobre rotas creator", () => {
+  assert.ok(isCreatorNavActive(`/t/${TENANT}/app/creator`, TENANT));
+  assert.ok(isCreatorNavActive(`/t/${TENANT}/app/creator/brands`, TENANT));
+  assert.ok(!isCreatorNavActive(`/t/${TENANT}/app/painel`, TENANT));
+});
+
+test("commercialNav não inclui Comunicação (movido para grupo Comunicações)", () => {
   const titles = commercialNav.map((item) => item.title);
-  assert.ok(titles.includes("Comunicação"));
-  assert.ok(!titles.includes("Chats"));
-  assert.ok(!titles.includes("E-mails"));
-  assert.ok(!titles.includes("Propostas"));
-  assert.equal(titles.length, 4);
+  assert.ok(!titles.includes("Comunicação"));
+  assert.equal(titles.length, 3);
+});
+
+test("communicationsNav contém Inbox, Tickets e Integrações", () => {
+  const titles = communicationsNav.map((item) => item.title);
+  assert.ok(titles.includes("Inbox"));
+  assert.ok(titles.includes("Tickets"));
+  assert.ok(titles.includes("Integrações"));
+  assert.equal(titles.length, 6);
 });
 
 test("posVendaNav agrupa Chamados, Faturamento e Projetos", () => {
@@ -54,13 +80,19 @@ test("isNavItemActive detecta funil de vendas e projetos separadamente", () => {
   assert.ok(!isNavItemActive(`/t/${TENANT}/app/funil/${SALES_PIPELINE_ID}`, TENANT, projetos));
 });
 
-test("isNavItemActive trata Comunicação e redirects legados de chats/emails", () => {
-  const comunicacao = commercialNav.find((item) => item.title === "Comunicação")!;
+test("isCommunicationsNavActive cobre hub e rotas legadas", () => {
+  assert.ok(isCommunicationsNavActive(`/t/${TENANT}/app/communications`, TENANT));
+  assert.ok(isCommunicationsNavActive(`/t/${TENANT}/app/communications/inbox`, TENANT));
+  assert.ok(isCommunicationsNavActive(`/t/${TENANT}/app/comunicacao`, TENANT));
+  assert.ok(isCommunicationsNavActive(`/t/${TENANT}/app/chats`, TENANT));
+  assert.ok(isCommunicationsNavActive(`/t/${TENANT}/app/emails`, TENANT));
+  assert.ok(!isCommunicationsNavActive(`/t/${TENANT}/app/agenda`, TENANT));
+});
 
-  assert.ok(isNavItemActive(`/t/${TENANT}/app/comunicacao`, TENANT, comunicacao));
-  assert.ok(isNavItemActive(`/t/${TENANT}/app/chats`, TENANT, comunicacao));
-  assert.ok(isNavItemActive(`/t/${TENANT}/app/emails`, TENANT, comunicacao));
-  assert.ok(!isNavItemActive(`/t/${TENANT}/app/agenda`, TENANT, comunicacao));
+test("isNavItemActive marca Inbox ativo no hub", () => {
+  const inbox = communicationsNav.find((item) => item.title === "Inbox")!;
+  assert.ok(isNavItemActive(`/t/${TENANT}/app/communications/inbox`, TENANT, inbox));
+  assert.ok(!isNavItemActive(`/t/${TENANT}/app/communications/tickets`, TENANT, inbox));
 });
 
 test("isPosVendaRouteActive cobre rotas operacionais secundárias", () => {
@@ -68,7 +100,7 @@ test("isPosVendaRouteActive cobre rotas operacionais secundárias", () => {
   assert.ok(isPosVendaRouteActive(`/t/${TENANT}/app/faturamento`, TENANT));
   assert.ok(isPosVendaRouteActive(`/t/${TENANT}/app/funil/${PROJECTS_PIPELINE_ID}`, TENANT));
   assert.ok(!isPosVendaRouteActive(`/t/${TENANT}/app/painel`, TENANT));
-  assert.ok(!isPosVendaRouteActive(`/t/${TENANT}/app/comunicacao`, TENANT));
+  assert.ok(!isPosVendaRouteActive(`/t/${TENANT}/app/communications/inbox`, TENANT));
 });
 
 console.log("\nTodos os testes de app-nav passaram.\n");

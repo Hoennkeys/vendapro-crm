@@ -4,13 +4,13 @@ import { clearAppStorage, loginAsOperational } from "./helpers";
 
 const DEMO_CRM_STORAGE_KEY = "vendapro_crm_state_v3_tenant-demo";
 
-test.describe("Integração Chamados → Chats", () => {
+test.describe("Integração Chamados → Inbox", () => {
   test.beforeEach(async ({ page }) => {
     await clearAppStorage(page);
     await loginAsOperational(page);
   });
 
-  test("Atender Cliente abre chat com mensagem contextual pré-preenchida", async ({ page }) => {
+  test("Atender Cliente abre inbox com mensagem contextual pré-preenchida", async ({ page }) => {
     await page.goto("/t/demo/app/chamados");
     await expect(page.getByRole("heading", { name: /Chamados de Suporte/i })).toBeVisible();
 
@@ -20,8 +20,7 @@ test.describe("Integração Chamados → Chats", () => {
       .first()
       .click();
 
-    await expect(page).toHaveURL(/\/t\/demo\/app\/comunicacao/);
-    await expect(page.getByRole("tab", { name: /Chats/i })).toHaveAttribute("data-state", "active");
+    await expect(page).toHaveURL(/\/t\/demo\/app\/communications\/inbox/);
 
     const messageInput = page.getByPlaceholder("Digite uma mensagem...");
     await expect(messageInput).toHaveValue(/Dúvida sobre fatura/);
@@ -46,10 +45,10 @@ test.describe("Integração Chamados → Chats", () => {
 
     await page.getByRole("link", { name: /Atender Cliente/i }).first().click();
 
-    await expect(page).toHaveURL(/\/t\/demo\/app\/comunicacao/);
+    await expect(page).toHaveURL(/\/t\/demo\/app\/communications\/inbox/);
 
     const messageInput = page.getByPlaceholder("Digite uma mensagem...");
     await expect(messageInput).toHaveValue(/Olá, João Cliente!/);
-    await expect(page.getByText("Selecione uma conversa")).not.toBeVisible();
+    await expect(page.getByText("Selecione uma conversa no Inbox omnichannel")).not.toBeVisible();
   });
 });

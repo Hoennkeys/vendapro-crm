@@ -1,0 +1,13 @@
+export * from "./domain/entities";
+export * from "./domain/permissions";
+export * from "./domain/metrics";
+export * from "./domain/legacy-adapter";
+export * from "./store/communications-context";
+export * from "./services/communication-hub.service";
+export * from "./routes/legacy-redirect";
+export { InboxLayout } from "./components/inbox/inbox-layout";
+export { IntegrationsPage } from "./components/integrations/integrations-page";
+export { CommunicationsDashboard } from "./components/reports/communications-dashboard";
+export { TicketListPage } from "./components/tickets/ticket-list";
+export { ChannelStatusGrid } from "./components/channels/channel-status-grid";
+export { CommunicationsSettings } from "./components/settings/communications-settings";
