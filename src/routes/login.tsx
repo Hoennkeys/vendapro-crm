@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { LogIn, Zap } from "lucide-react";
+import { LogIn, Sparkles } from "lucide-react";
 
 import { LoginDevMode } from "@/components/login/login-dev-mode";
 import { LoginPipelinePanel } from "@/components/login/login-pipeline-panel";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth/auth-store";
 import { getDefaultPortalPath } from "@/lib/auth/session";
+import { pageTitle, PRODUCT_NAME, PRODUCT_TAGLINE } from "@/lib/product-branding";
 
 type LoginSearch = {
   redirect?: string;
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/login")({
       throw redirect({ to: target });
     }
   },
-  head: () => ({ meta: [{ title: "Login — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: pageTitle("Login") }] }),
   component: LoginPage,
 });
 
@@ -77,20 +78,17 @@ function LoginPage() {
     <div className="grid min-h-svh lg:grid-cols-[42fr_58fr]">
       <div className="relative flex flex-col bg-background">
         <div className="flex flex-1 flex-col justify-center px-8 py-10 sm:px-12 lg:px-16">
-        <div className="mx-auto w-full max-w-sm space-y-8">
+          <div className="mx-auto w-full max-w-sm space-y-8">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                {/* Ícone representando o Albatroz / Voo Alto */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-5 w-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a9.015 9.015 0 0 1 8.716 6.747M12 3a9.015 9.015 0 0 0-8.716 6.747M3.75 14.25h16.5" />
-                </svg>
+                <Sparkles className="h-5 w-5" />
               </div>
               <div>
                 <h1 className="text-xl font-black tracking-wider uppercase text-foreground">
-                  Albatross™
+                  {PRODUCT_NAME}
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                Inteligência comercial de ponta a ponta.
+                  Todo o seu negócio de creator em um único lugar.
                 </p>
               </div>
             </div>
@@ -126,12 +124,16 @@ function LoginPage() {
                 Entrar
               </Button>
             </form>
+
+            <p className="text-center text-[11px] text-muted-foreground">{PRODUCT_TAGLINE}</p>
           </div>
         </div>
 
         <footer className="flex items-center justify-between px-8 pb-6 sm:px-12 lg:px-16">
           <LoginDevMode loading={loading} onSelectProfile={(e, p) => void handleQuickLogin(e, p)} />
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} VendaPro</p>
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} {PRODUCT_NAME}
+          </p>
         </footer>
       </div>
 

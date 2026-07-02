@@ -44,9 +44,10 @@ import {
 import { usePlatform } from "@/lib/admin/platform-store";
 import { slugify } from "@/lib/admin/tenant-registry";
 import type { PlatformTenant, TenantPlan, TenantStatus } from "@/lib/admin/types";
+import { platformPageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/admin/tenants/")({
-  head: () => ({ meta: [{ title: "Tenants — Admin VendaPro" }] }),
+  head: () => ({ meta: [{ title: platformPageTitle("Tenants") }] }),
   component: TenantsPage,
 });
 

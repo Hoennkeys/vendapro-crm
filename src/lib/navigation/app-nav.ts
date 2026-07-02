@@ -57,16 +57,16 @@ export type AppNavPipelineLink = AppNavLink & {
 export type AppNavItem = AppNavLink | AppNavPipelineLink;
 
 export const CREATOR_SECTION_LABEL = SIDEBAR_SECTIONS.creator;
-/** CRM legado — rotas e stores preservados; labels Creator OS */
+/** Rotas legado preservadas; labels GlowUP */
 export const COMMERCIAL_SECTION_LABEL = SIDEBAR_SECTIONS.commercial;
 export const COMMUNICATIONS_SECTION_LABEL = SIDEBAR_SECTIONS.communications;
 export const POS_VENDA_SECTION_LABEL = SIDEBAR_SECTIONS.operations;
 
 export const creatorNav: AppNavItem[] = [
-  { title: "Overview", to: "/t/$tenantSlug/app/creator/", icon: Sparkles },
+  { title: NAV_LABELS.dashboard, to: "/t/$tenantSlug/app/creator/", icon: Sparkles },
   { title: "Marcas", to: "/t/$tenantSlug/app/creator/brands", icon: Building2 },
-  { title: "Agencies", to: "/t/$tenantSlug/app/creator/agencies", icon: Handshake },
-  { title: "Sponsors", to: "/t/$tenantSlug/app/creator/sponsors", icon: Target },
+  { title: "Agências", to: "/t/$tenantSlug/app/creator/agencies", icon: Handshake },
+  { title: "Patrocinadores", to: "/t/$tenantSlug/app/creator/sponsors", icon: Target },
   { title: "Campanhas", to: "/t/$tenantSlug/app/creator/campaigns", icon: Megaphone },
 ];
 
@@ -90,9 +90,9 @@ export const communicationsNav: AppNavItem[] = [
     to: "/t/$tenantSlug/app/communications/integrations",
     icon: Plug,
   },
-  { title: "Relatórios", to: "/t/$tenantSlug/app/communications/reports", icon: BarChart3 },
+  { title: NAV_LABELS.reports, to: "/t/$tenantSlug/app/communications/reports", icon: BarChart3 },
   {
-    title: "Configurações",
+    title: NAV_LABELS.settings,
     to: "/t/$tenantSlug/app/communications/settings",
     icon: Settings2,
   },

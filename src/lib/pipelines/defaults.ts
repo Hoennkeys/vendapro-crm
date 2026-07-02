@@ -67,7 +67,7 @@ export function createProjectsPipeline(tenantId: string): PipelineDefinition {
       { id: "entregue", label: "Entregue", ordem: 3, cor: "bg-emerald-600" },
     ],
     cardSchema: [
-      { key: "cliente", label: "Cliente", type: "text", showOnCard: true },
+      { key: "cliente", label: "Marca", type: "text", showOnCard: true },
       { key: "prazo", label: "Prazo", type: "date", showOnCard: true },
       {
         key: "prioridade",

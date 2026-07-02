@@ -19,9 +19,10 @@ import {
   countPaidPlatformInvoices,
 } from "@/lib/platform-mock-data";
 import type { TenantPlan } from "@/lib/admin/types";
+import { platformPageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/admin/billing")({
-  head: () => ({ meta: [{ title: "Billing — Admin VendaPro" }] }),
+  head: () => ({ meta: [{ title: platformPageTitle("Billing") }] }),
   component: BillingPage,
 });
 

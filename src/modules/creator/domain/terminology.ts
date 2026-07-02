@@ -1,22 +1,24 @@
 /**
- * Creator OS terminology — presentation layer only.
+ * GlowUP terminology — presentation layer only.
  * Legacy identifiers (Lead, clientId, /funil, ADMIN, etc.) remain unchanged in code and data.
  */
 
 import type { Papel } from "@/lib/types";
 import type { ParticipantRole } from "@/modules/communications/domain/entities";
-import { PAGE_TITLE_SUFFIX } from "@/lib/product-branding";
+import { PAGE_TITLE_SUFFIX, PRODUCT_NAME } from "@/lib/product-branding";
 import { PROJECTS_PIPELINE_ID, SALES_PIPELINE_ID } from "@/lib/pipelines/defaults";
 
-/** Canonical Creator OS terms mapped from legacy CRM concepts */
+/** Canonical GlowUP terms mapped from legacy CRM concepts */
 export const CREATOR_TERMS = {
   admin: "Creator Owner",
   employee: "Team Member",
-  client: "Brand",
-  lead: "Partnership Opportunity",
-  sale: "Campaign Revenue",
-  funnel: "Campaign Pipeline",
-  portal: "Brand Portal",
+  client: "Marca",
+  lead: "Oportunidade",
+  sale: "Parceria",
+  funnel: "Pipeline de campanhas",
+  portal: "Portal da Marca",
+  proposal: "Proposta de campanha",
+  company: "Creator Business",
 } as const;
 
 /** Legacy labels preserved for compatibility shims and tests */
@@ -37,7 +39,7 @@ export function creatorLabel(concept: CreatorConcept): string {
 }
 
 export function legacyLabel(concept: CreatorConcept): string {
-  return LEGACY_TERMS[concept];
+  return LEGACY_TERMS[concept as keyof typeof LEGACY_TERMS];
 }
 
 /** CRM user role (Papel) display labels */
@@ -65,20 +67,23 @@ export function labelCommunicationsRole(role: ParticipantRole): string {
 
 /** Sidebar section labels */
 export const SIDEBAR_SECTIONS = {
-  creator: "Creator OS",
-  commercial: "Campaign Revenue",
+  creator: PRODUCT_NAME,
+  commercial: "Parcerias",
   communications: "Comunicações",
   operations: "Operações",
 } as const;
 
-/** Navigation item labels (Creator presentation over legacy routes) */
+/** Navigation item labels (GlowUP presentation over legacy routes) */
 export const NAV_LABELS = {
-  revenueDashboard: "Campaign Revenue",
-  campaignPipeline: CREATOR_TERMS.funnel,
-  agenda: "Agenda",
+  dashboard: "Dashboard",
+  revenueDashboard: "Receita de Parcerias",
+  campaignPipeline: "Pipeline de Parcerias",
+  agenda: "Calendário",
   chamados: "Suporte",
-  faturamento: "Faturamento de Brands",
+  faturamento: "Financeiro",
   projetos: "Projetos",
+  reports: "Relatórios",
+  settings: "Configurações",
 } as const;
 
 export function creatorPageTitle(section: string): string {
@@ -91,14 +96,14 @@ export function portalPageTitle(section: string): string {
 
 /** Display name for legacy pipeline records (routes/IDs unchanged) */
 export function labelPipelineDisplay(pipelineId: string, fallbackNome: string): string {
-  if (pipelineId === SALES_PIPELINE_ID) return CREATOR_TERMS.funnel;
+  if (pipelineId === SALES_PIPELINE_ID) return NAV_LABELS.campaignPipeline;
   if (pipelineId === PROJECTS_PIPELINE_ID) return NAV_LABELS.projetos;
   return fallbackNome;
 }
 
 export function labelPipelineDescription(pipelineId: string, fallback: string): string {
   if (pipelineId === SALES_PIPELINE_ID) {
-    return `${CREATOR_TERMS.funnel} de ${CREATOR_TERMS.lead.toLowerCase()}s e receita de campanha.`;
+    return `${NAV_LABELS.campaignPipeline} — ${CREATOR_TERMS.lead.toLowerCase()}s e campanhas ativas.`;
   }
   return fallback;
 }
@@ -109,24 +114,24 @@ export type BreadcrumbItem = {
 };
 
 const ROUTE_SEGMENT_LABELS: Record<string, string> = {
-  creator: "Creator OS",
+  creator: PRODUCT_NAME,
   brands: "Marcas",
-  agencies: "Agencies",
-  sponsors: "Sponsors",
+  agencies: "Agências",
+  sponsors: "Patrocinadores",
   campaigns: "Campanhas",
   painel: NAV_LABELS.revenueDashboard,
   funil: CREATOR_TERMS.funnel,
-  agenda: "Agenda",
+  agenda: NAV_LABELS.agenda,
   communications: SIDEBAR_SECTIONS.communications,
   inbox: "Inbox",
   tickets: "Tickets",
   channels: "Canais",
   integrations: "Integrações",
-  reports: "Relatórios",
-  settings: "Configurações",
-  chamados: "Suporte",
+  reports: NAV_LABELS.reports,
+  settings: NAV_LABELS.settings,
+  chamados: NAV_LABELS.chamados,
   faturamento: NAV_LABELS.faturamento,
-  configuracoes: "Configurações",
+  configuracoes: NAV_LABELS.settings,
   propostas: "Propostas",
 };
 
@@ -144,7 +149,7 @@ export function resolveAppBreadcrumbs(pathname: string, tenantSlug: string): Bre
   }
 
   const segments = rest.split("/").filter(Boolean);
-  const crumbs: BreadcrumbItem[] = [{ label: "Creator OS", href: `${base}/creator/` }];
+  const crumbs: BreadcrumbItem[] = [{ label: PRODUCT_NAME, href: `${base}/creator/` }];
 
   let pathAcc = base;
   for (let i = 0; i < segments.length; i++) {
@@ -154,7 +159,7 @@ export function resolveAppBreadcrumbs(pathname: string, tenantSlug: string): Bre
     if (seg === "$pipelineId" || seg.startsWith("pipeline-")) {
       const pipelineLabel =
         seg === SALES_PIPELINE_ID
-          ? CREATOR_TERMS.funnel
+          ? NAV_LABELS.campaignPipeline
           : seg === PROJECTS_PIPELINE_ID
             ? NAV_LABELS.projetos
             : CREATOR_TERMS.funnel;

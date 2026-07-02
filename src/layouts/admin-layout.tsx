@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth/auth-store";
 import { userInitials } from "@/lib/auth/session";
+import { PRODUCT_NAME } from "@/lib/product-branding";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { session, logout } = useAuth();
@@ -15,12 +16,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-fo  shadow-lg shadow-primary/20">
-            <Shield className="h-8 w-8 text-primary-foreground  stroke-2 fill-primary-foreground  stroke-2  stroke-primary-foreground " />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <Shield className="h-5 w-5" />
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-semibold">Albatross™</p>
-            <p className="text-xs text-muted-foreground">Plataforma</p>
+            <p className="text-sm font-semibold">{PRODUCT_NAME} Platform</p>
+            <p className="text-xs text-muted-foreground">Administração</p>
           </div>
         </div>
         <nav className="ml-7 flex items-center gap-4 text-sm">
@@ -61,9 +62,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
       <main className="p-4 md:p-6">{children}</main>
 
-      
-      <footer className="w-full text-center pt-8 pb-6 opacity-40 text-xs tracking-wide text-muted-foreground">
-        <p>Albatross CRM is a trademark of Ferreira4Dev. &copy; 2026</p>
+      <footer className="w-full pb-6 pt-8 text-center text-xs tracking-wide text-muted-foreground opacity-40">
+        <p>
+          {PRODUCT_NAME} &copy; {new Date().getFullYear()}
+        </p>
       </footer>
     </div>
   );

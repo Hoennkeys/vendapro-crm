@@ -1,9 +1,10 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { CommunicationsProvider } from "@/modules/communications/store/communications-context";
 import { CommunicationsSubNav } from "@/modules/communications/components/communications-sub-nav";
+import { pageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/communications")({
-  head: () => ({ meta: [{ title: "Comunicações — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: pageTitle("Comunicações") }] }),
   component: CommunicationsLayout,
 });
 

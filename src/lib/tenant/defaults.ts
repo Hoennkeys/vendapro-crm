@@ -38,7 +38,7 @@ export function getDefaultWhiteLabel(slug: string): TenantWhiteLabel | null {
 export const THEME_COLOR_PRESETS = [
   {
     id: "azul",
-    label: "Azul VendaPro",
+    label: "GlowUP",
     cores: DEFAULT_THEME_COLORS.vendapro,
   },
   {

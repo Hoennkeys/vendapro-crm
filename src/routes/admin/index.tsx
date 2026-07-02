@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { usePlatform } from "@/lib/admin/platform-store";
 import { PLATFORM_ACTIVITIES } from "@/lib/platform-mock-data";
 import { useAuth } from "@/lib/auth/auth-store";
+import { platformPageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/admin/")({
-  head: () => ({ meta: [{ title: "Admin — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: platformPageTitle("Dashboard") }] }),
   component: AdminDashboard,
 });
 
@@ -133,7 +134,7 @@ function AdminDashboard() {
         <CardHeader>
           <CardTitle className="text-base">Atividade recente</CardTitle>
           <CardDescription>
-            Eventos correlacionados entre tenants, usuários mock e CRM operacional.
+            Eventos correlacionados entre tenants, usuários mock e operação da plataforma.
           </CardDescription>
         </CardHeader>
         <CardContent>

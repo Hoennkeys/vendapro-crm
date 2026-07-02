@@ -17,7 +17,7 @@ import { AppSidebarCreatorGroup } from "@/components/app-sidebar-creator-group";
 import { AppSidebarPosVendaGroup } from "@/components/app-sidebar-posvenda-group";
 import { AppSidebarComunicacoesGroup } from "@/components/app-sidebar-comunicacoes-group";
 import { COMMERCIAL_SECTION_LABEL, commercialNav } from "@/lib/navigation/app-nav";
-import { PRODUCT_LEGACY_LABEL, PRODUCT_NAME } from "@/lib/product-branding";
+import { PRODUCT_NAME, PRODUCT_TAGLINE } from "@/lib/product-branding";
 import { useTenant } from "@/lib/tenant/tenant-store";
 
 export function AppSidebar() {
@@ -35,7 +35,7 @@ export function AppSidebar() {
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold">{whiteLabel.nome}</span>
             <span className="text-xs text-muted-foreground">{PRODUCT_NAME}</span>
-            <span className="text-[10px] text-muted-foreground/80">{PRODUCT_LEGACY_LABEL}</span>
+            <span className="text-[10px] text-muted-foreground/80">{PRODUCT_TAGLINE}</span>
           </div>
         </div>
       </SidebarHeader>

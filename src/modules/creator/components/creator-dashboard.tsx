@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCommunicationsUnread } from "@/hooks/use-communications-unread";
 import { brl } from "@/lib/format";
+import { PRODUCT_NAME } from "@/lib/product-branding";
 import { computeCreatorMetrics } from "../domain/metrics";
 import { useCreator } from "../store/creator-context";
 import { DashboardStatCard } from "./dashboard-stat-card";
@@ -40,10 +41,10 @@ export function CreatorDashboard() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-primary" />
-          Creator OS
+          {PRODUCT_NAME}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Visão unificada de marcas, parcerias e campanhas — com CRM e Communications Hub integrados.
+          Gerencie suas marcas e parceiros — campanhas, comunicação e operação em um só lugar.
         </p>
       </div>
 
@@ -55,15 +56,15 @@ export function CreatorDashboard() {
           icon={Building2}
         />
         <DashboardStatCard
-          title="Agencies"
+          title="Agências"
           value={metrics.activeAgencies}
           subtitle={`${agencies.length} parceiras`}
           icon={Handshake}
         />
         <DashboardStatCard
-          title="Sponsors"
+          title="Patrocinadores"
           value={metrics.activeSponsors}
-          subtitle={`${sponsors.length} no pipeline`}
+          subtitle={`${sponsors.length} no pipeline de campanhas`}
           icon={Target}
         />
         <DashboardStatCard
@@ -116,7 +117,7 @@ export function CreatorDashboard() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Inbox className="h-4 w-4" />
-              Communications Hub
+              Comunicações
             </CardTitle>
             <CardDescription>Inbox omnichannel conectado às campanhas</CardDescription>
           </CardHeader>

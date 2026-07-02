@@ -21,11 +21,12 @@ import { getPlatformTenantById } from "@/lib/admin/tenant-registry";
 import type { TenantPlan, TenantStatus } from "@/lib/admin/types";
 import { THEME_COLOR_PRESETS } from "@/lib/tenant/defaults";
 import type { TenantWhiteLabel } from "@/lib/tenant/types";
+import { platformPageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/admin/tenants/$tenantId")({
   head: ({ params }) => {
     const tenant = getPlatformTenantById(params.tenantId);
-    return { meta: [{ title: `${tenant?.nome ?? "Tenant"} — Admin VendaPro` }] };
+    return { meta: [{ title: platformPageTitle(tenant?.nome ?? "Tenant") }] };
   },
   component: TenantDetailPage,
 });

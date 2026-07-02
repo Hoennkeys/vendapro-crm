@@ -12,10 +12,12 @@ import { findClientById } from "@/lib/clients-registry";
 import { useAuth } from "@/lib/auth/auth-store";
 import { useCrm } from "@/lib/crm-store";
 import { useCommunications } from "@/modules/communications/store/communications-context";
+import { pageTitle } from "@/lib/product-branding";
+import { CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/communications/inbox")({
   validateSearch: (search: Record<string, unknown>) => parseInboxSearch(search),
-  head: () => ({ meta: [{ title: "Inbox — Comunicações" }] }),
+  head: () => ({ meta: [{ title: pageTitle("Inbox") }] }),
   component: InboxPage,
 });
 
@@ -42,7 +44,7 @@ function InboxPage() {
       } else {
         const draft = buildConversaFromClient(search.clientId, leads, agenteId);
         if (!draft) {
-          toast.error("Cliente não encontrado.");
+          toast.error(`${CREATOR_TERMS.client} não encontrada.`);
           return;
         }
         legacyConversaId = adicionarConversa(draft).id;

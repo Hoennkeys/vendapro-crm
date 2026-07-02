@@ -28,11 +28,13 @@ console.log("creator/domain/terminology — testes unitários\n");
 test("CREATOR_TERMS mapeia conceitos legados", () => {
   assert.equal(CREATOR_TERMS.admin, "Creator Owner");
   assert.equal(CREATOR_TERMS.employee, "Team Member");
-  assert.equal(CREATOR_TERMS.client, "Brand");
-  assert.equal(CREATOR_TERMS.lead, "Partnership Opportunity");
-  assert.equal(CREATOR_TERMS.sale, "Campaign Revenue");
-  assert.equal(CREATOR_TERMS.funnel, "Campaign Pipeline");
-  assert.equal(CREATOR_TERMS.portal, "Brand Portal");
+  assert.equal(CREATOR_TERMS.client, "Marca");
+  assert.equal(CREATOR_TERMS.lead, "Oportunidade");
+  assert.equal(CREATOR_TERMS.sale, "Parceria");
+  assert.equal(CREATOR_TERMS.funnel, "Pipeline de campanhas");
+  assert.equal(CREATOR_TERMS.portal, "Portal da Marca");
+  assert.equal(CREATOR_TERMS.proposal, "Proposta de campanha");
+  assert.equal(CREATOR_TERMS.company, "Creator Business");
 });
 
 test("LEGACY_TERMS preserva vocabulário CRM", () => {
@@ -51,27 +53,27 @@ test("labelCommunicationsRole traduz roles de comms", () => {
 });
 
 test("labelPipelineDisplay renomeia pipelines conhecidos", () => {
-  assert.equal(labelPipelineDisplay(SALES_PIPELINE_ID, "Vendas"), CREATOR_TERMS.funnel);
+  assert.equal(labelPipelineDisplay(SALES_PIPELINE_ID, "Vendas"), NAV_LABELS.campaignPipeline);
   assert.equal(labelPipelineDisplay(PROJECTS_PIPELINE_ID, "Projetos"), NAV_LABELS.projetos);
   assert.equal(labelPipelineDisplay("custom", "Custom"), "Custom");
 });
 
-test("creatorPageTitle e portalPageTitle usam sufixo Creator OS", () => {
-  assert.match(creatorPageTitle("Configurações"), /Creator OS$/);
-  assert.match(portalPageTitle("Início"), /Brand Portal$/);
+test("creatorPageTitle e portalPageTitle usam sufixo GlowUP", () => {
+  assert.match(creatorPageTitle("Configurações"), /GlowUP$/);
+  assert.match(portalPageTitle("Início"), /Portal da Marca$/);
 });
 
-test("resolveAppBreadcrumbs gera trilha para funil de vendas", () => {
+test("resolveAppBreadcrumbs gera trilha para pipeline de parcerias", () => {
   const crumbs = resolveAppBreadcrumbs(
     `/t/demo/app/funil/${SALES_PIPELINE_ID}`,
     "demo",
   );
-  assert.ok(crumbs.some((c) => c.label === CREATOR_TERMS.funnel));
+  assert.ok(crumbs.some((c) => c.label === NAV_LABELS.campaignPipeline));
 });
 
-test("SIDEBAR_SECTIONS expõe rótulos Creator", () => {
-  assert.equal(SIDEBAR_SECTIONS.creator, "Creator OS");
-  assert.equal(SIDEBAR_SECTIONS.commercial, "Campaign Revenue");
+test("SIDEBAR_SECTIONS expõe rótulos GlowUP", () => {
+  assert.equal(SIDEBAR_SECTIONS.creator, "GlowUP");
+  assert.equal(SIDEBAR_SECTIONS.commercial, "Parcerias");
 });
 
 console.log("\nTodos os testes de terminology passaram.\n");

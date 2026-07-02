@@ -22,7 +22,7 @@ export const Route = createFileRoute("/t/$tenantSlug/portal/")({
 const modules = [
   {
     title: "Propostas",
-    desc: "Suas propostas comerciais",
+    desc: `Suas ${CREATOR_TERMS.proposal.toLowerCase()}s`,
     icon: FileText,
     to: "/t/$tenantSlug/portal/propostas" as const,
     countKey: "propostas" as const,

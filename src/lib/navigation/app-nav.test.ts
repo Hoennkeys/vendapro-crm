@@ -29,12 +29,12 @@ const TENANT = "demo";
 
 console.log("app-nav — testes unitários\n");
 
-test("creatorNav contém Overview, Marcas e Campanhas", () => {
+test("creatorNav contém Dashboard, Marcas e Campanhas", () => {
   const titles = creatorNav.map((item) => item.title);
-  assert.ok(titles.includes("Overview"));
+  assert.ok(titles.includes("Dashboard"));
   assert.ok(titles.includes("Marcas"));
   assert.ok(titles.includes("Campanhas"));
-  assert.equal(CREATOR_SECTION_LABEL, "Creator OS");
+  assert.equal(CREATOR_SECTION_LABEL, "GlowUP");
   assert.equal(COMMERCIAL_SECTION_LABEL, SIDEBAR_SECTIONS.commercial);
 });
 

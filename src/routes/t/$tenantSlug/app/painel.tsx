@@ -124,7 +124,7 @@ function Painel() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{NAV_LABELS.revenueDashboard}</h1>
           <p className="text-sm text-muted-foreground">
-            Visão geral de {CREATOR_TERMS.sale.toLowerCase()} e equipe.
+            Acompanhe suas campanhas e parcerias.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -148,15 +148,15 @@ function Painel() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Kpi
           icon={<Wallet className="h-4 w-4" />}
-          label="Campaign Revenue — mês"
+          label="Receita de Parcerias — mês"
           value={brl(faturamento)}
           hint={ganhos ? `${ganhos} campanha(s) fechada(s)` : "Nenhuma receita registrada ainda"}
         />
         <Kpi
           icon={<TrendingUp className="h-4 w-4" />}
-          label={`Valor do ${CREATOR_TERMS.funnel}`}
+          label={`Valor do ${NAV_LABELS.campaignPipeline}`}
           value={brl(pipeline)}
-          hint={`${leadsFiltrados.length} ${CREATOR_TERMS.lead.toLowerCase()}s`}
+          hint={`${leadsFiltrados.length} ${CREATOR_TERMS.lead.toLowerCase()}${leadsFiltrados.length === 1 ? "" : "s"}`}
         />
         <Kpi
           icon={<Percent className="h-4 w-4" />}
@@ -191,7 +191,7 @@ function Painel() {
           <CardContent className="h-[280px]">
             {faturamentoMensal.every((m) => m.faturamento === 0) ? (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Sem faturamento registrado. Feche deals no {CREATOR_TERMS.funnel.toLowerCase()} para ver o gráfico.
+                Sem receita registrada. Feche parcerias no {NAV_LABELS.campaignPipeline.toLowerCase()} para ver o gráfico.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -227,7 +227,7 @@ function Painel() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{CREATOR_TERMS.lead}s por Etapa</CardTitle>
+            <CardTitle>Oportunidades por Etapa</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             {leadsFiltrados.length === 0 ? (
@@ -267,7 +267,7 @@ function Painel() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>{CREATOR_TERMS.sale} por {CREATOR_TERMS.employee}</CardTitle>
+            <CardTitle>Parcerias por {CREATOR_TERMS.employee}</CardTitle>
           </CardHeader>
           <CardContent className="h-[260px]">
             {porVendedor.every((v) => v.vendas === 0) ? (

@@ -204,7 +204,7 @@ function NovoLeadDialog({
         </DialogHeader>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <Label>{CREATOR_TERMS.client} / Empresa</Label>
+            <Label>{CREATOR_TERMS.client} / {CREATOR_TERMS.company}</Label>
             <Input
               value={form.cliente}
               onChange={(e) => setForm({ ...form, cliente: e.target.value })}

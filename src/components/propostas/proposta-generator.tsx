@@ -30,6 +30,8 @@ import { brl, brDate } from "@/lib/format";
 import { useTenant } from "@/lib/tenant/tenant-store";
 import type { ItemProposta, Proposta, StatusProposta } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { PRODUCT_NAME } from "@/lib/product-branding";
+import { CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 
 const corStatus: Record<StatusProposta, string> = {
   Pendente: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
@@ -78,9 +80,9 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
   const gerarPdf = (p: Partial<Proposta>) => {
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.text("Proposta Comercial — VendaPro", 14, 18);
+    doc.text(`${CREATOR_TERMS.proposal} — ${PRODUCT_NAME}`, 14, 18);
     doc.setFontSize(10);
-    doc.text(`Cliente: ${p.cliente ?? cliente}`, 14, 28);
+    doc.text(`${CREATOR_TERMS.client}: ${p.cliente ?? cliente}`, 14, 28);
     doc.text(`CNPJ: ${p.cnpj ?? cnpj}`, 14, 34);
     doc.text(`Número: ${p.numero ?? "—"}`, 14, 40);
     doc.text(
@@ -107,12 +109,12 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
     if (p.observacoes ?? observacoes)
       doc.text(`Observações: ${p.observacoes ?? observacoes}`, 14, finalY + 6);
     doc.setFontSize(8);
-    doc.text("VendaPro CRM · vendapro.com.br", 14, 285);
+    doc.text(`${PRODUCT_NAME} · glowup.app`, 14, 285);
     doc.save(`${p.numero ?? "proposta"}.pdf`);
   };
 
   const salvar = () => {
-    if (!cliente) return toast.error("Informe o cliente.");
+    if (!cliente) return toast.error(`Informe a ${CREATOR_TERMS.client.toLowerCase()}.`);
     if (itens.length === 0 || !itens.some((i) => i.descricao.trim())) {
       return toast.error("Adicione ao menos um item com descrição.");
     }
@@ -150,7 +152,7 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Gerador de Propostas</h1>
           <p className="text-sm text-muted-foreground">
-            Crie propostas comerciais profissionais em PDF.
+            Crie {CREATOR_TERMS.proposal.toLowerCase()}s profissionais em PDF.
           </p>
         </div>
       )}
@@ -163,7 +165,7 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Cliente</Label>
+                <Label>{CREATOR_TERMS.client}</Label>
                 <Input
                   value={cliente}
                   onChange={(e) => setCliente(e.target.value)}
@@ -272,10 +274,10 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
             <CardContent className="space-y-2 text-sm">
               <div className="rounded-md border p-4 bg-muted/30 space-y-2">
                 <div className="flex items-center justify-between border-b pb-2">
-                  <span className="font-semibold text-primary">VendaPro</span>
-                  <span className="text-xs text-muted-foreground">Proposta Comercial</span>
+                  <span className="font-semibold text-primary">{PRODUCT_NAME}</span>
+                  <span className="text-xs text-muted-foreground">{CREATOR_TERMS.proposal}</span>
                 </div>
-                <p className="font-medium">{cliente || "Cliente"}</p>
+                <p className="font-medium">{cliente || CREATOR_TERMS.client}</p>
                 <p className="text-xs text-muted-foreground">{cnpj || "CNPJ"}</p>
                 <div className="space-y-1 mt-2">
                   {itens.map((i, idx) => (
@@ -310,7 +312,7 @@ export function PropostaGenerator({ leadId, embedded = false, onCreated }: Propo
               <TableHeader>
                 <TableRow>
                   <TableHead>Nº</TableHead>
-                  <TableHead>Cliente</TableHead>
+                  <TableHead>{CREATOR_TERMS.client}</TableHead>
                   <TableHead>Valor</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Validade</TableHead>

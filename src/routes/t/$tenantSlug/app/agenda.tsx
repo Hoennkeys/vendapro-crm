@@ -27,9 +27,11 @@ import { useCrm, nomeVendedor } from "@/lib/crm-store";
 import { brDate, isoFromDateInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Prioridade, Tarefa } from "@/lib/types";
+import { pageTitle } from "@/lib/product-branding";
+import { NAV_LABELS } from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/agenda")({
-  head: () => ({ meta: [{ title: "Agenda e Tarefas — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: pageTitle(NAV_LABELS.agenda) }] }),
   component: Agenda,
 });
 

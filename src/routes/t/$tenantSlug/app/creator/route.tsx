@@ -4,7 +4,7 @@ import { CreatorSubNav } from "@/modules/creator/components/creator-sub-nav";
 import { pageTitle } from "@/lib/product-branding";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/creator")({
-  head: () => ({ meta: [{ title: pageTitle("Creator OS") }] }),
+  head: () => ({ meta: [{ title: pageTitle("Dashboard") }] }),
   component: CreatorLayout,
 });
 

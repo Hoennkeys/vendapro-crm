@@ -2,10 +2,10 @@ import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { segment: "", label: "Overview" },
+  { segment: "", label: "Dashboard" },
   { segment: "brands", label: "Marcas" },
-  { segment: "agencies", label: "Agencies" },
-  { segment: "sponsors", label: "Sponsors" },
+  { segment: "agencies", label: "Agências" },
+  { segment: "sponsors", label: "Patrocinadores" },
   { segment: "campaigns", label: "Campanhas" },
 ] as const;
 

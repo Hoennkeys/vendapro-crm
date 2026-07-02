@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { THEME_COLOR_PRESETS } from "@/lib/tenant/defaults";
 import { useTenant } from "@/lib/tenant/tenant-store";
+import { CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 
 export function WhiteLabelSettings() {
   const { whiteLabel, updateWhiteLabel, updateThemeColors, resetWhiteLabel } = useTenant();
@@ -150,7 +151,7 @@ export function WhiteLabelSettings() {
             )}
             <div>
               <p className="font-semibold">{draft.nome}</p>
-              <p className="text-xs text-muted-foreground">Portal do Cliente</p>
+              <p className="text-xs text-muted-foreground">{CREATOR_TERMS.portal}</p>
             </div>
             <Button
               className="ml-auto"

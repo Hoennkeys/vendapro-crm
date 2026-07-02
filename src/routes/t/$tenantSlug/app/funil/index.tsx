@@ -8,9 +8,15 @@ import { useTenant } from "@/lib/tenant/tenant-store";
 import { useCrm } from "@/lib/crm-store";
 import { leadsToPipelineItems } from "@/lib/pipelines/adapter";
 import { SALES_PIPELINE_ID, PROJECTS_PIPELINE_ID } from "@/lib/pipelines/defaults";
+import { pageTitle } from "@/lib/product-branding";
+import {
+  labelPipelineDescription,
+  labelPipelineDisplay,
+  NAV_LABELS,
+} from "@/modules/creator/domain/terminology";
 
 export const Route = createFileRoute("/t/$tenantSlug/app/funil/")({
-  head: () => ({ meta: [{ title: "Pipelines — VendaPro CRM" }] }),
+  head: () => ({ meta: [{ title: pageTitle(NAV_LABELS.campaignPipeline) }] }),
   component: FunilIndex,
 });
 
@@ -25,7 +31,7 @@ function FunilIndex() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Pipelines</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{NAV_LABELS.campaignPipeline}</h1>
         <p className="text-sm text-muted-foreground">
           Selecione um pipeline para visualizar o quadro kanban.
         </p>
@@ -46,7 +52,9 @@ function FunilIndex() {
                       <KanbanSquare className="h-4 w-4" />
                     </div>
                     <div>
-                      <CardTitle className="text-base">{pipeline.nome}</CardTitle>
+                      <CardTitle className="text-base">
+                        {labelPipelineDisplay(pipeline.id, pipeline.nome)}
+                      </CardTitle>
                       <CardDescription className="text-xs capitalize">
                         {pipeline.tipo}
                       </CardDescription>
@@ -60,7 +68,9 @@ function FunilIndex() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">{pipeline.descricao}</p>
+              <p className="text-sm text-muted-foreground">
+                {labelPipelineDescription(pipeline.id, pipeline.descricao)}
+              </p>
               <p className="text-xs text-muted-foreground">{pipeline.stages.length} etapas</p>
               {!emBreve ? (
                 <Button asChild size="sm">

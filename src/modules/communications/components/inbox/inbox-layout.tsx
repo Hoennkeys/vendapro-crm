@@ -38,6 +38,7 @@ import { ChannelFilterBar } from "./channel-filter-bar";
 import { ConversationList } from "./conversation-list";
 import { ConversationThread } from "./conversation-thread";
 import { MessageComposer } from "./message-composer";
+import { CREATOR_TERMS } from "@/modules/creator/domain/terminology";
 
 function iniciais(nome: string) {
   return nome.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
@@ -156,7 +157,7 @@ export function InboxLayout({
       return;
     }
     if (legacyConversa.leadId) {
-      toast.info("Esta conversa já está vinculada a um lead no funil.");
+      toast.info(`Esta conversa já está vinculada a uma ${CREATOR_TERMS.lead.toLowerCase()} no pipeline.`);
       return;
     }
     const novo = crm.adicionarLead(
@@ -200,7 +201,7 @@ export function InboxLayout({
       em: new Date().toISOString(),
       texto: `Histórico salvo: ${resumo.slice(0, 200)}${resumo.length > 200 ? "…" : ""}`,
     });
-    toast.success("Histórico salvo no CRM");
+    toast.success(`Histórico salvo no perfil da ${CREATOR_TERMS.client.toLowerCase()}`);
   };
 
   const displayName = (c: Conversation) =>
@@ -299,13 +300,15 @@ export function InboxLayout({
                     <p className="text-xs text-muted-foreground">Etapa: {leadVinculado.etapa}</p>
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Sem lead vinculado.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Sem {CREATOR_TERMS.lead.toLowerCase()} vinculada.
+                  </p>
                 )}
                 <Button className="w-full" onClick={criarOportunidade}>
                   <UserPlus className="h-4 w-4" /> Criar Oportunidade
                 </Button>
                 <Button variant="outline" className="w-full" onClick={salvarHistorico}>
-                  <Save className="h-4 w-4" /> Salvar Histórico no CRM
+                  <Save className="h-4 w-4" /> Salvar no perfil da {CREATOR_TERMS.client}
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   Última atividade: {brDate(active.lastMessageAt)}

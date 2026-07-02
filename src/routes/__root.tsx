@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { defaultMeta } from "@/lib/product-branding";
 import { AuthProvider } from "@/lib/auth/auth-store";
 import { loadSessionForRequest } from "@/lib/auth/load-session";
 import type { Session } from "@/lib/auth/types";
@@ -90,18 +91,7 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "VendaPro CRM — Gestão de Vendas para Pequenos Negócios" },
-      {
-        name: "description",
-        content:
-          "Sistema completo de CRM para gestão de vendas, funil, atendimento e propostas comerciais.",
-      },
-      { name: "author", content: "VendaPro" },
-      { property: "og:title", content: "VendaPro CRM" },
-      { property: "og:description", content: "CRM moderno para pequenos negócios brasileiros." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      ...defaultMeta(),
     ],
     links: [
       {
@@ -112,7 +102,7 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
       },
     ],
   }),
@@ -128,7 +118,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body style={{ fontFamily: "Inter, system-ui, sans-serif" }}>
+      <body style={{ fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' }}>
         {children}
         <Scripts />
       </body>
